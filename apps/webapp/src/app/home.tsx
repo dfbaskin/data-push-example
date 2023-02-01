@@ -1,7 +1,13 @@
+import TestPing from "./testPing";
+import styles from "./home.module.scss";
+
 export function Home() {
   return (
-    <div>
-      <div style={{ margin: '2rem' }}>Examples of pushing data to browser.</div>
+    <div className={styles['home']}>
+      <div>Examples of pushing data to browser.</div>
+      <div>
+        <TestPing />
+      </div>
     </div>
   );
 }
