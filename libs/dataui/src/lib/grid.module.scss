@@ -1,0 +1,7 @@
+.grid {
+  grid-area: grid;
+  border: 1px solid var(--data-border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: var(--data-panel-gap);
+}

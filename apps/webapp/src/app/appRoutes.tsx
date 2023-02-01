@@ -1,4 +1,6 @@
+import { DataUI } from '@example/dataui';
 import { Route, Routes, Link } from 'react-router-dom';
+import Home from './home';
 
 export function AppRoutes() {
   return (
@@ -6,18 +8,13 @@ export function AppRoutes() {
         <Route
           path="/"
           element={
-            <div>
-              This is the generated root route.{' '}
-              <Link to="/page-2">Click here for page 2.</Link>
-            </div>
+            <Home />
           }
         />
         <Route
-          path="/page-2"
+          path="/polling"
           element={
-            <div>
-              <Link to="/">Click here to go back to root page.</Link>
-            </div>
+            <DataUI />
           }
         />
       </Routes>

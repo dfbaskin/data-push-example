@@ -18,8 +18,8 @@ export function Header() {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/page-2" className={isActiveClassName}>
-              Page 2
+            <NavLink to="/polling" className={isActiveClassName}>
+              Polling
             </NavLink>
           </li>
         </ul>
