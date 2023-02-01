@@ -11,6 +11,14 @@
 
   ul {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
+  }
+}
+
+.navlink {
+  padding: 0.5rem;
+  &:global(.active) {
+    background: linear-gradient(#e0e0ff, #d0d0ff);
+    border-radius: 4px;
   }
 }

@@ -1,21 +1,28 @@
-import { Link } from 'react-router-dom';
-import styles from "./header.module.scss";
+import { NavLink } from 'react-router-dom';
+import styles from './header.module.scss';
 
 export function Header() {
+  const navLinkName = styles['navlink'];
+  const isActiveClassName = ({ isActive }: { isActive: boolean }) =>
+    isActive ? `${navLinkName} active` : navLinkName;
   return (
-    <div role="navigation" className={styles["header"]}>
+    <div role="navigation" className={styles['header']}>
       <div>
         <h1>Push Example</h1>
       </div>
       <div>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/page-2">Page 2</Link>
-        </li>
-      </ul>
+        <ul>
+          <li>
+            <NavLink to="/" className={isActiveClassName}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/page-2" className={isActiveClassName}>
+              Page 2
+            </NavLink>
+          </li>
+        </ul>
       </div>
     </div>
   );
