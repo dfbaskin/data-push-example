@@ -22,6 +22,9 @@ export function Header() {
               Polling
             </NavLink>
           </li>
+          <li>
+            <a href="/graphql">GraphQL</a>
+          </li>
         </ul>
       </div>
     </div>
