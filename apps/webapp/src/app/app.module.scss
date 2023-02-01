@@ -1,1 +1,9 @@
-/* Your styles goes here. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  > div:nth-of-type(2) {
+    flex-grow: 1;
+    background: linear-gradient(#fff, #eee)
+  }
+}
