@@ -2,7 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<Query>();
+    .AddQueryType<Query>()
+    .AddTypeExtension<GroupQueryExtensions>();
 
 builder.Services
     .AddSingleton<CurrentData>();
