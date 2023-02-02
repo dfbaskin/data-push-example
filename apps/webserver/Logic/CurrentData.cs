@@ -5,6 +5,7 @@ public class CurrentData
     private readonly ConcurrentDictionary<string, Group> groups;
     private readonly ConcurrentDictionary<string, Driver> drivers;
     private readonly ConcurrentDictionary<string, Vehicle> vehicles;
+    private readonly ConcurrentDictionary<string, Transport> transports;
 
     public CurrentData()
     {
@@ -40,6 +41,8 @@ public class CurrentData
                     return d;
                 }
             );
+
+        transports = new ConcurrentDictionary<string, Transport>();
     }
 
     public ICollection<Group> Groups => groups.Values;
@@ -47,6 +50,8 @@ public class CurrentData
     public ICollection<Driver> Drivers => drivers.Values;
 
     public ICollection<Vehicle> Vehicles => vehicles.Values;
+
+    public ICollection<Transport> Transports => transports.Values;
 
     public Driver? UpdateDriver(string driverId, Func<Driver, Driver> updateFn)
     {
@@ -56,6 +61,11 @@ public class CurrentData
     public Vehicle? UpdateVehicle(string vehicleId, Func<Vehicle, Vehicle> updateFn)
     {
         return UpdateItem(vehicleId, vehicles, updateFn);
+    }
+
+    public Transport? UpdateTransport(string transportId, Func<Transport, Transport> updateFn)
+    {
+        return UpdateItem(transportId, transports, updateFn);
     }
 
     private T? UpdateItem<T>(string itemId, ConcurrentDictionary<string, T> items, Func<T, T> updateFn)

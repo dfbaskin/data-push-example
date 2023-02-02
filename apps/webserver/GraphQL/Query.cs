@@ -10,4 +10,5 @@ public class Query
     public IEnumerable<Group> GetGroups() => Current.Groups;
     public IEnumerable<Driver> GetDrivers() => Current.Drivers;
     public IEnumerable<Vehicle> GetVehicles() => Current.Vehicles;
+    public IEnumerable<Transport> GetTransports() => Current.Transports;
 }

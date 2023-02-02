@@ -3,7 +3,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
-    .AddTypeExtension<GroupQueryExtensions>();
+    .AddTypeExtension<GroupExtensions>()
+    .AddTypeExtension<DriverExtensions>()
+    .AddTypeExtension<VehicleExtensions>()
+    .AddTypeExtension<TransportExtensions>();
 
 builder.Services
     .AddSingleton<CurrentData>()

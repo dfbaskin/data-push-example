@@ -19,7 +19,7 @@ public sealed partial class SimulationWorker : BackgroundService
         );
 
         // while (!stoppingToken.IsCancellationRequested)
-        await DriveRoute(context);
+        await TransportItems(context);
     }
 
     private record Context(

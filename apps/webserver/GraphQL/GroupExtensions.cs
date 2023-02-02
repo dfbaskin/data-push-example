@@ -1,10 +1,10 @@
 
 [ExtendObjectType(typeof(Group))]
-public class GroupQueryExtensions
+public class GroupExtensions
 {
     private CurrentData Current { get; }
 
-    public GroupQueryExtensions(CurrentData current)
+    public GroupExtensions(CurrentData current)
     {
         Current = current ?? throw new ArgumentNullException(nameof(current));
     }

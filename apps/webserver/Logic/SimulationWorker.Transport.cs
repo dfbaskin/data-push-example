@@ -1,6 +1,6 @@
 public sealed partial class SimulationWorker
 {
-    private async Task DriveRoute(Context context)
+    private async Task TransportItems(Context context)
     {
         var groupAssignment = PickGroupAssignment();
 
