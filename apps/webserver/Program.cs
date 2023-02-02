@@ -4,6 +4,9 @@ builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>();
 
+builder.Services
+    .AddSingleton<CurrentData>();
+
 var app = builder.Build();
 
 app.MapGet("/api/ping", () => new {

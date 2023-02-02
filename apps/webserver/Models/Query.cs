@@ -1,8 +1,13 @@
 public class Query
 {
-    private List<Group> groups = Group.CreateGroups().ToList();
-    private List<Driver> drivers = Driver.CreateDrivers().ToList();
+    private CurrentData Current { get; }
 
-    public IEnumerable<Group> GetGroups() => groups;
-    public IEnumerable<Driver> GetDrivers() => drivers;
+    public Query(CurrentData current)
+    {
+        Current = current ?? throw new ArgumentNullException(nameof(current));
+    }
+
+    public IEnumerable<Group> GetGroups() => Current.Groups;
+    public IEnumerable<Driver> GetDrivers() => Current.Drivers;
+    public IEnumerable<Vehicle> GetVehicles() => Current.Vehicles;
 }
