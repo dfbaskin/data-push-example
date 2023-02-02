@@ -20,6 +20,11 @@ public static class FakerExtensions
         return list.ElementAt(Faker.RandomNumber.Next(list.Count - 1));
     }
 
+    public static ICollection<T> AppendItem<T>(this IEnumerable<T> items, T item)
+    {
+        return items.Append(item).ToList();
+    }
+
     private static string Capitalize(string value)
     {
         if (value.Length == 0)

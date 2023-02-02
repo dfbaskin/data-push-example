@@ -63,6 +63,11 @@ public class CurrentData
         return UpdateItem(vehicleId, vehicles, updateFn);
     }
 
+    public bool AddTransport(Transport transport)
+    {
+        return transports.TryAdd(transport.TransportId, transport);
+    }
+
     public Transport? UpdateTransport(string transportId, Func<Transport, Transport> updateFn)
     {
         return UpdateItem(transportId, transports, updateFn);
