@@ -8,7 +8,9 @@ public enum DriverStatus
 public record Driver(
   string Name,
   string DriverId,
-  DriverStatus Status
+  string? GroupAssignment,
+  DriverStatus Status,
+  ICollection<History> History
 )
 {
     public const int DriverCount = 15;
@@ -25,7 +27,9 @@ public record Driver(
         return new Driver(
             Name: Faker.Name.FullName(),
             DriverId: $"DRV{(idx * 3) + 100:n0}",
-            Status: DriverStatus.Inactive
+            GroupAssignment: null,
+            Status: DriverStatus.Inactive,
+            History: new List<History>()
         );
     }
 }
