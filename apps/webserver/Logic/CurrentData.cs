@@ -48,17 +48,30 @@ public class CurrentData
 
     public ICollection<Vehicle> Vehicles => vehicles.Values;
 
-    public bool UpdateDriver(string driverId, Func<Driver, Driver> updateFn)
+    public Driver? UpdateDriver(string driverId, Func<Driver, Driver> updateFn)
     {
-        return drivers.TryGetValue(driverId, out Driver? current)
-            ? drivers.TryUpdate(driverId, updateFn(current), current)
-            : false;
+        return UpdateItem(driverId, drivers, updateFn);
     }
 
-    public bool UpdateVehicle(string vehicleId, Func<Vehicle, Vehicle> updateFn)
+    public Vehicle? UpdateVehicle(string vehicleId, Func<Vehicle, Vehicle> updateFn)
     {
-        return vehicles.TryGetValue(vehicleId, out Vehicle? current)
-            ? vehicles.TryUpdate(vehicleId, updateFn(current), current)
-            : false;
+        return UpdateItem(vehicleId, vehicles, updateFn);
+    }
+
+    private T? UpdateItem<T>(string itemId, ConcurrentDictionary<string, T> items, Func<T, T> updateFn)
+        where T : class
+    {
+        if (!items.TryGetValue(itemId, out T? current))
+        {
+            return null;
+        }
+
+        var updated = updateFn(current);
+        if (!items.TryUpdate(itemId, updated, current))
+        {
+            return null;
+        }
+
+        return updated;
     }
 }

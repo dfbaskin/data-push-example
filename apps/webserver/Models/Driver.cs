@@ -28,7 +28,7 @@ public record Driver(
             Name: Faker.Name.FullName(),
             DriverId: $"DRV{(idx * 3) + 100:n0}",
             GroupAssignment: null,
-            Status: DriverStatus.Inactive,
+            Status: idx == 7 ?  DriverStatus.Inactive : DriverStatus.Available,
             History: new List<History>()
         );
     }

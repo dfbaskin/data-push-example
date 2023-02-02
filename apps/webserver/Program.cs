@@ -6,7 +6,8 @@ builder.Services
     .AddTypeExtension<GroupQueryExtensions>();
 
 builder.Services
-    .AddSingleton<CurrentData>();
+    .AddSingleton<CurrentData>()
+    .AddHostedService<SimulationWorker>();
 
 var app = builder.Build();
 

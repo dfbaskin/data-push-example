@@ -33,7 +33,7 @@ public record Vehicle(
     public static Vehicle CreateVehicle(int idx)
     {
         return new Vehicle(
-            VehicleType: VehicleTypes.ElementAt(Faker.RandomNumber.Next(VehicleTypes.Count - 1)),
+            VehicleType: VehicleTypes.PickOneOf(),
             VehicleId: $"VH{(idx * 4) + 100:n0}",
             Status: idx == 3 ? VehicleStatus.OutOfService : VehicleStatus.Available,
             Location: new Location(

@@ -13,6 +13,13 @@ public static class FakerExtensions
         );
     }
 
+    public static T PickOneOf<T>(this IEnumerable<T> items)
+        where T : class
+    {
+        var list = items.ToList();
+        return list.ElementAt(Faker.RandomNumber.Next(list.Count - 1));
+    }
+
     private static string Capitalize(string value)
     {
         if (value.Length == 0)
