@@ -20,16 +20,10 @@ public record Manifest(
     }
 }
 
-public enum ManifestItemStatus {
-    Pending,
-    Delivered
-}
-
 public record ManifestItem(
     string ItemId,
     int Quantity,
-    string Description,
-    ManifestItemStatus Status
+    string Description
 )
 {
     public static ManifestItem CreateManifestItem()
@@ -37,8 +31,7 @@ public record ManifestItem(
         return new ManifestItem(
             ItemId: Faker.Model.ProductId(),
             Quantity: Faker.RandomNumber.Next(1, 5),
-            Description: Faker.Model.Description(),
-            Status: ManifestItemStatus.Pending
+            Description: Faker.Model.Description()
         );
     }
 }

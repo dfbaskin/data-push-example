@@ -14,8 +14,7 @@ public record Vehicle(
 )
 {
     private const int VehicleCount = 10;
-    private const double CenterLatitude = 35.565752687910056;
-    private const double CenterLongitude = -83.49854631914549;
+
     private static List<string> VehicleTypes =
         new List<string>
         {
@@ -37,8 +36,8 @@ public record Vehicle(
             VehicleId: Faker.Model.ItemId("VEH", idx * 4),
             Status: idx == 3 ? VehicleStatus.OutOfService : VehicleStatus.Available,
             Location: new Location(
-                Latitude: CenterLatitude,
-                Longitude: CenterLongitude,
+                Latitude: null,
+                Longitude: null,
                 Address: null
             ),
             History: new List<HistoryEntry>()

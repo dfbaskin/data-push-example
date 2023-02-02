@@ -22,6 +22,13 @@ public sealed partial class SimulationWorker : BackgroundService
         await TransportItems(context);
     }
 
+    private async Task WaitForAFewSeconds(Context context, string message)
+    {
+        Logger.LogInformation(message);
+        int seconds = Faker.RandomNumber.Next(3, 7);
+        await Task.Delay(seconds * 1000, context.Token);
+    }
+
     private record Context(
         CancellationToken Token
     )

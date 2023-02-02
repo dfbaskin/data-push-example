@@ -4,6 +4,7 @@ public enum TransportStatus
     Loading,
     InRoute,
     Unloading,
+    Returning,
     Finished
 }
 
