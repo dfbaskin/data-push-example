@@ -19,7 +19,7 @@ public record Group(
     {
         return new Group(
             Name: groupName,
-            Description: Faker.Lorem.Words(7).AsCapitalizedString()
+            Description: Faker.Model.Description()
         );
     }
 }

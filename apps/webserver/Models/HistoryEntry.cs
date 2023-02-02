@@ -1,11 +1,11 @@
-public record History(
+public record HistoryEntry(
   DateTime TimestampUTC,
   string Message
 )
 {
-    public static History CreateHistory(string message)
+    public static HistoryEntry CreateHistoryEntry(string message)
     {
-        return new History(
+        return new HistoryEntry(
             TimestampUTC: DateTime.UtcNow,
             Message: message
         );

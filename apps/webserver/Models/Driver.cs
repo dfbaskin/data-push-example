@@ -10,7 +10,7 @@ public record Driver(
   string DriverId,
   string? GroupAssignment,
   DriverStatus Status,
-  ICollection<History> History
+  ICollection<HistoryEntry> History
 )
 {
     public const int DriverCount = 15;
@@ -26,10 +26,10 @@ public record Driver(
     {
         return new Driver(
             Name: Faker.Name.FullName(),
-            DriverId: $"DRV{(idx * 3) + 100:n0}",
+            DriverId: Faker.Model.ItemId("DRV", idx * 3),
             GroupAssignment: null,
             Status: idx == 7 ?  DriverStatus.Inactive : DriverStatus.Available,
-            History: new List<History>()
+            History: new List<HistoryEntry>()
         );
     }
 }

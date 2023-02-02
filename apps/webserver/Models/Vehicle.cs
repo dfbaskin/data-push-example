@@ -10,7 +10,7 @@ public record Vehicle(
   string VehicleId,
   VehicleStatus Status,
   Location? Location,
-  ICollection<History> History
+  ICollection<HistoryEntry> History
 )
 {
     private const int VehicleCount = 10;
@@ -34,14 +34,14 @@ public record Vehicle(
     {
         return new Vehicle(
             VehicleType: VehicleTypes.PickOneOf(),
-            VehicleId: $"VH{(idx * 4) + 100:n0}",
+            VehicleId: Faker.Model.ItemId("VEH", idx * 4),
             Status: idx == 3 ? VehicleStatus.OutOfService : VehicleStatus.Available,
             Location: new Location(
                 Latitude: CenterLatitude,
                 Longitude: CenterLongitude,
                 Address: null
             ),
-            History: new List<History>()
+            History: new List<HistoryEntry>()
         );
     }
 }
