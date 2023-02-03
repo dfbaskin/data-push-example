@@ -18,8 +18,34 @@ public sealed partial class SimulationWorker : BackgroundService
             Token: stoppingToken
         );
 
-        // while (!stoppingToken.IsCancellationRequested)
-        await TransportItems(context);
+        int currentTaskCount = 0;
+        const int maxTaskCount = 30;
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            if (currentTaskCount < maxTaskCount)
+            {
+                #pragma warning disable 4014
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        Interlocked.Increment(ref currentTaskCount);
+                        await TransportItems(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("Error executing task.", ex);
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref currentTaskCount);
+                    }
+                }, stoppingToken);
+            }
+
+            int seconds = Faker.RandomNumber.Next(10, 20);
+            await Task.Delay(seconds * 1000, context.Token);
+        }
     }
 
     private async Task WaitForAFewSeconds(Context context, string message)

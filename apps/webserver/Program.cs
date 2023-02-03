@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddGraphQLServer()
+    .AllowIntrospection(false)
     .AddQueryType<Query>()
     .AddTypeExtension<GroupExtensions>()
     .AddTypeExtension<DriverExtensions>()

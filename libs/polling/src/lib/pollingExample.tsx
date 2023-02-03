@@ -1,4 +1,6 @@
 import { DataUI } from '@example/dataui';
+import { GraphqlProvider } from './graphqlClient';
+import Groups from './groups';
 
 function ToDo() {
   return <div>To Do</div>;
@@ -6,12 +8,14 @@ function ToDo() {
 
 export function PollingExample() {
   return (
-    <DataUI
-      groupsElement={<ToDo />}
-      gridElement={<ToDo />}
-      geolocationElement={<ToDo />}
-      detailsElement={<ToDo />}
-    />
+    <GraphqlProvider>
+      <DataUI
+        groupsElement={<Groups />}
+        gridElement={<ToDo />}
+        geolocationElement={<ToDo />}
+        detailsElement={<ToDo />}
+      />
+    </GraphqlProvider>
   );
 }
 
