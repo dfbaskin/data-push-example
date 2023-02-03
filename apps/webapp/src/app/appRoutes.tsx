@@ -1,23 +1,13 @@
-import { DataUI } from '@example/dataui';
-import { Route, Routes, Link } from 'react-router-dom';
+import { PollingExample } from '@example/polling';
+import { Route, Routes } from 'react-router-dom';
 import Home from './home';
 
 export function AppRoutes() {
   return (
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home />
-          }
-        />
-        <Route
-          path="/polling"
-          element={
-            <DataUI />
-          }
-        />
-      </Routes>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/polling" element={<PollingExample />} />
+    </Routes>
   );
 }
 

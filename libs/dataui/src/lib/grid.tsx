@@ -1,9 +1,15 @@
+import { ReactNode } from "react";
 import styles from "./grid.module.scss";
 
-export function Grid() {
+interface Props {
+  element?: ReactNode
+}
+
+export function Grid(props: Props) {
+  const { element } = props;
   return (
     <div className={styles['grid']}>
-      Grid
+      {element}
     </div>
   );
 }

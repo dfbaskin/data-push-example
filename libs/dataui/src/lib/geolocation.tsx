@@ -1,9 +1,15 @@
+import { ReactNode } from "react";
 import styles from "./geolocation.module.scss";
 
-export function Geolocation() {
+interface Props {
+  element?: ReactNode
+}
+
+export function Geolocation(props: Props) {
+  const { element } = props;
   return (
     <div className={styles['geolocation']}>
-      Geolocation
+      {element}
     </div>
   );
 }
