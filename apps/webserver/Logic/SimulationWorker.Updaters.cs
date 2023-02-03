@@ -2,13 +2,13 @@ public sealed partial class SimulationWorker
 {
     private TransportContext UpdateDriver(
         TransportContext context,
-        string message
-    ) => UpdateDriver(context, null, message);
+        params string[] messages
+    ) => UpdateDriver(context, null, messages);
 
     private TransportContext UpdateDriver(
         TransportContext context,
         Func<Driver, Driver>? updateFn,
-        string? message = null
+        params string[] messages
     )
     {
         var driver = Current.UpdateDriver(context.Driver.DriverId, driver =>
@@ -17,11 +17,16 @@ public sealed partial class SimulationWorker
             {
                 driver = updateFn(driver);
             }
-            if (message != null)
+            if (messages.Length > 0)
             {
                 driver = driver with
                 {
-                    History = driver.History.AppendItem(HistoryEntry.CreateHistoryEntry(message))
+                    History = messages.Aggregate(
+                        driver.History,
+                        (hist, message) => {
+                            return hist.AppendItem(HistoryEntry.CreateHistoryEntry(message));
+                        }
+                    )
                 };
             }
             return driver;
@@ -38,13 +43,13 @@ public sealed partial class SimulationWorker
 
     private TransportContext UpdateVehicle(
         TransportContext context,
-        string message
-    ) => UpdateVehicle(context, null, message);
+        params string[] messages
+    ) => UpdateVehicle(context, null, messages);
 
     private TransportContext UpdateVehicle(
         TransportContext context,
         Func<Vehicle, Vehicle>? updateFn,
-        string? message = null
+        params string[] messages
     )
     {
         var vehicle = Current.UpdateVehicle(context.Vehicle.VehicleId, vehicle =>
@@ -53,11 +58,16 @@ public sealed partial class SimulationWorker
             {
                 vehicle = updateFn(vehicle);
             }
-            if (message != null)
+            if (messages.Length > 0)
             {
                 vehicle = vehicle with
                 {
-                    History = vehicle.History.AppendItem(HistoryEntry.CreateHistoryEntry(message))
+                    History = messages.Aggregate(
+                        vehicle.History,
+                        (hist, message) => {
+                            return hist.AppendItem(HistoryEntry.CreateHistoryEntry(message));
+                        }
+                    )
                 };
             }
             return vehicle;
@@ -74,13 +84,13 @@ public sealed partial class SimulationWorker
 
     private TransportContext UpdateTransport(
         TransportContext context,
-        string message
-    ) => UpdateTransport(context, null, message);
+        params string[] messages
+    ) => UpdateTransport(context, null, messages);
 
     private TransportContext UpdateTransport(
         TransportContext context,
         Func<Transport, Transport>? updateFn,
-        string? message = null
+        params string[] messages
     )
     {
         var transport = Current.UpdateTransport(context.Transport.TransportId, transport =>
@@ -89,11 +99,16 @@ public sealed partial class SimulationWorker
             {
                 transport = updateFn(transport);
             }
-            if (message != null)
+            if (messages.Length > 0)
             {
                 transport = transport with
                 {
-                    History = transport.History.AppendItem(HistoryEntry.CreateHistoryEntry(message))
+                    History = messages.Aggregate(
+                        transport.History,
+                        (hist, message) => {
+                            return hist.AppendItem(HistoryEntry.CreateHistoryEntry(message));
+                        }
+                    )
                 };
             }
             return transport;

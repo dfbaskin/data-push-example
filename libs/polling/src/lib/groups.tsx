@@ -1,3 +1,4 @@
+import { Truck, Van } from '@example/dataui';
 import { useQuery } from 'urql';
 import { usePolling } from './usePolling';
 
@@ -9,6 +10,12 @@ const testQuery = `
     drivers {
       name
       driverId
+      transport {
+        vehicle {
+          vehicleId
+          vehicleType
+        }
+      }
     }
   }
 }
@@ -21,6 +28,12 @@ interface Data {
     drivers: {
       name: string;
       driverId: string;
+      transport?: {
+        vehicle: {
+          vehicleId: string;
+          vehicleType: "Truck" | "Van";
+        }
+      }
     }[]
   }[]
 }
@@ -41,6 +54,16 @@ export function Groups() {
   const groups = (data ?? defaultData).groups;
   const activeGroups = groups.filter(g => g.drivers.length !== 0);
 
+  const getIcon = (driver: Data["groups"][0]["drivers"][0]) => {
+    switch(driver.transport?.vehicle?.vehicleType) {
+      case "Truck":
+        return <Truck />;
+      case "Van":
+        return <Van />;
+    }
+    return null;
+  }
+
   return (
     <div>
       <ul>
@@ -54,7 +77,9 @@ export function Groups() {
           <ul>
             {g.drivers.map(d => (
               <li>
-                {d.driverId}
+                {getIcon(d)}
+                {d.driverId} /
+                {d.transport?.vehicle.vehicleId}
                 ({d.name})
               </li>
             ))}

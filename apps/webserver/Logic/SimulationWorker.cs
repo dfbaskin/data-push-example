@@ -43,7 +43,7 @@ public sealed partial class SimulationWorker : BackgroundService
                 }, stoppingToken);
             }
 
-            int seconds = Faker.RandomNumber.Next(10, 20);
+            int seconds = Faker.RandomNumber.Next(2, 10);
             await Task.Delay(seconds * 1000, context.Token);
         }
     }
