@@ -76,7 +76,7 @@ export function Groups() {
           </span>
           <ul>
             {g.drivers.map(d => (
-              <li>
+              <li key={d.driverId}>
                 {getIcon(d)}
                 {d.driverId} /
                 {d.transport?.vehicle.vehicleId}
