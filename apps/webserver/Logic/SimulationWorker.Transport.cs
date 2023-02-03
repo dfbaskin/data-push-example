@@ -1,9 +1,9 @@
 public sealed partial class SimulationWorker
 {
-    private const double CenterLatitude = 35.565752687910056;
-    private const double CenterLongitude = -83.49854631914549;
-    private const double LatitudeOffset = 0.15;
-    private const double LongitudeOffset = 0.35;
+    public const double CenterLatitude = 35.565752687910056;
+    public const double CenterLongitude = -83.49854631914549;
+    public const double LatitudeOffset = 0.15;
+    public const double LongitudeOffset = 0.35;
 
     private async Task TransportItems(Context contextBase)
     {

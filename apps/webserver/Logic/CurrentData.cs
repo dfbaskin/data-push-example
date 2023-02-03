@@ -43,6 +43,8 @@ public class CurrentData
             );
 
         transports = new ConcurrentDictionary<string, Transport>();
+
+        Configuration = Configuration.GetConfiguration();
     }
 
     public ICollection<Group> Groups => groups.Values;
@@ -52,6 +54,8 @@ public class CurrentData
     public ICollection<Vehicle> Vehicles => vehicles.Values;
 
     public ICollection<Transport> Transports => transports.Values;
+
+    public Configuration Configuration { get; }
 
     public Driver? UpdateDriver(string driverId, Func<Driver, Driver> updateFn)
     {

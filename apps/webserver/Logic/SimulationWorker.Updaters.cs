@@ -28,7 +28,7 @@ public sealed partial class SimulationWorker
         });
         if (driver == null)
         {
-            throw new InvalidOperationException("Could not driver entity in collection.");
+            throw new InvalidOperationException("Could not find driver entity in collection.");
         }
         return context with
         {
@@ -64,7 +64,7 @@ public sealed partial class SimulationWorker
         });
         if (vehicle == null)
         {
-            throw new InvalidOperationException("Could not vehicle entity in collection.");
+            throw new InvalidOperationException("Could not find vehicle entity in collection.");
         }
         return context with
         {
@@ -100,7 +100,7 @@ public sealed partial class SimulationWorker
         });
         if (transport == null)
         {
-            throw new InvalidOperationException("Could not transport entity in collection.");
+            throw new InvalidOperationException("Could not find transport entity in collection.");
         }
         return context with
         {
