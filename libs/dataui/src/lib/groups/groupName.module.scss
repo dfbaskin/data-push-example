@@ -1,0 +1,21 @@
+.groupName {
+  display: flex;
+  gap: 0.5rem;
+  > span:nth-of-type(2) {
+    flex-grow: 1;
+  }
+}
+
+.groupItem {
+  margin-left: 1rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
+
+.expColIcon {
+  cursor: pointer;
+  transition: transform 0.5s;
+  &:global(.expanded) {
+    transform: rotate(45deg);
+  }
+}

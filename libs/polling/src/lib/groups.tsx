@@ -1,4 +1,4 @@
-import { Truck, Van } from '@example/dataui';
+import { GroupItem, GroupName } from '@example/dataui';
 import { useQuery } from 'urql';
 import { usePolling } from './usePolling';
 
@@ -31,62 +31,47 @@ interface Data {
       transport?: {
         vehicle: {
           vehicleId: string;
-          vehicleType: "Truck" | "Van";
-        }
-      }
-    }[]
-  }[]
+          vehicleType: 'Truck' | 'Van';
+        };
+      };
+    }[];
+  }[];
 }
 
 const defaultData: Data = {
-  groups: []
+  groups: [],
 };
 
 export function Groups() {
-  const [{data}, reexecuteQuery] = useQuery<Data>({
+  const [{ data }, reexecuteQuery] = useQuery<Data>({
     query: testQuery,
-    requestPolicy: 'network-only'
+    requestPolicy: 'network-only',
   });
   usePolling(() => {
     reexecuteQuery();
   });
 
   const groups = (data ?? defaultData).groups;
-  const activeGroups = groups.filter(g => g.drivers.length !== 0);
-
-  const getIcon = (driver: Data["groups"][0]["drivers"][0]) => {
-    switch(driver.transport?.vehicle?.vehicleType) {
-      case "Truck":
-        return <Truck />;
-      case "Van":
-        return <Van />;
-    }
-    return null;
-  }
+  const activeGroups = groups.filter((g) => g.drivers.length !== 0);
 
   return (
     <div>
-      <ul>
-
-      {activeGroups.map(g => (
-        <li key={g.name}>
-          <span title={g.description}>
-            {g.name}
-            ({g.drivers.length})
-          </span>
-          <ul>
-            {g.drivers.map(d => (
-              <li key={d.driverId}>
-                {getIcon(d)}
-                {d.driverId} /
-                {d.transport?.vehicle.vehicleId}
-                ({d.name})
-              </li>
-            ))}
-          </ul>
-        </li>
+      {activeGroups.map((g) => (
+        <GroupName
+          key={g.name}
+          name={g.name}
+          count={g.drivers.length}
+          element={g.drivers.map((d) => (
+            <GroupItem
+              key={d.driverId}
+              driverId={d.driverId}
+              driverName={d.name}
+              vehicleId={d.transport?.vehicle?.vehicleId ?? '?'}
+              vehicleType={d.transport?.vehicle?.vehicleType}
+            />
+          ))}
+        />
       ))}
-      </ul>
     </div>
   );
 }
