@@ -1,7 +1,9 @@
 .container {
   display: grid;
+  grid-template-columns: 2fr 3fr 2fr;
+  grid-template-rows: 3fr 3fr 4fr;
   grid-template-areas:
-    "groups geolocation geolocation geolocation details"
-    "groups geolocation geolocation geolocation details"
-    "grid grid grid grid details";
+    "groups geolocation details"
+    "groups geolocation details"
+    "grid grid details";
 }
