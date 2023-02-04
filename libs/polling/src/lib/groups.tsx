@@ -7,6 +7,7 @@ const testQuery = `
   groups {
     name
     description
+    count
     drivers {
       name
       driverId
@@ -25,6 +26,7 @@ interface Data {
   groups: {
     name: string;
     description: string;
+    count: number;
     drivers: {
       name: string;
       driverId: string;
@@ -52,7 +54,7 @@ export function Groups() {
   });
 
   const groups = (data ?? defaultData).groups;
-  const activeGroups = groups.filter((g) => g.drivers.length !== 0);
+  const activeGroups = groups.filter((g) => g.count !== 0);
 
   return (
     <div>
@@ -60,7 +62,7 @@ export function Groups() {
         <GroupName
           key={g.name}
           name={g.name}
-          count={g.drivers.length}
+          count={g.count}
           element={g.drivers.map((d) => (
             <GroupItem
               key={d.driverId}

@@ -13,4 +13,11 @@ public class GroupExtensions
     {
         return Current.Drivers.Where(d => d.GroupAssignment == group.Name);
     }
+
+    public int GetCount([Parent] Group group)
+    {
+        return Current.Drivers
+            .Where(d => d.GroupAssignment == group.Name)
+            .Count();
+    }
 }
