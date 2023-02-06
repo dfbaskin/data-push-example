@@ -23,6 +23,11 @@ export function Header() {
             </NavLink>
           </li>
           <li>
+            <NavLink to="/subscription" className={isActiveClassName}>
+              Subscription
+            </NavLink>
+          </li>
+          <li>
             <a href="/graphql">GraphQL</a>
           </li>
         </ul>

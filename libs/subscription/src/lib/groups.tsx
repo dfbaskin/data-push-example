@@ -1,10 +1,7 @@
 import { GroupItem, GroupName } from '@example/dataui';
-import { useQuery } from 'urql';
-import { usePolling } from './usePolling';
+import { useSubscription } from 'urql';
 
-const groupsQuery = `
-{
-  groups {
+const groupQuery = `
     name
     description
     count
@@ -18,26 +15,38 @@ const groupsQuery = `
         }
       }
     }
+`;
+
+const subscribeQuery = `
+subscription {
+  groupUpdated {
+${groupQuery}
   }
 }
 `;
 
-interface Data {
-  groups: {
+interface GroupData {
+  name: string;
+  description: string;
+  count: number;
+  drivers: {
     name: string;
-    description: string;
-    count: number;
-    drivers: {
-      name: string;
-      driverId: string;
-      transport?: {
-        vehicle: {
-          vehicleId: string;
-          vehicleType: 'Truck' | 'Van';
-        };
+    driverId: string;
+    transport?: {
+      vehicle: {
+        vehicleId: string;
+        vehicleType: 'Truck' | 'Van';
       };
-    }[];
+    };
   }[];
+}
+
+interface SubscriptionData {
+  groupUpdated: GroupData;
+}
+
+interface Data {
+  groups: GroupData[];
 }
 
 const defaultData: Data = {
@@ -45,13 +54,25 @@ const defaultData: Data = {
 };
 
 export function Groups() {
-  const [{ data }, reexecuteQuery] = useQuery<Data>({
-    query: groupsQuery,
-    requestPolicy: 'network-only',
-  });
-  usePolling(() => {
-    reexecuteQuery();
-  });
+  const [{ data }] = useSubscription<SubscriptionData, Data>(
+    {
+      query: subscribeQuery,
+    },
+    (current = defaultData, data) => {
+      return {
+        ...current,
+        groups: current.groups.reduce(
+          (list, group) => {
+            if (group.name !== data.groupUpdated.name) {
+              list.push(group);
+            }
+            return list;
+          },
+          [data.groupUpdated]
+        ),
+      };
+    }
+  );
 
   const groups = (data ?? defaultData).groups;
   const activeGroups = groups.filter((g) => g.count !== 0);

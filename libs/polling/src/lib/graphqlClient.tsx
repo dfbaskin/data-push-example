@@ -1,8 +1,10 @@
 import { ReactNode } from 'react';
 import { createClient, Provider } from 'urql';
 
+const url = new URL('/graphql', globalThis.window.location.href);
+
 const client = createClient({
-  url: '/graphql',
+  url: url.toString(),
   maskTypename: true
 });
 
