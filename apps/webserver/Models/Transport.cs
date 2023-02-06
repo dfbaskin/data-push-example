@@ -17,7 +17,7 @@ public record Transport(
     Manifest Manifest,
     TransportStatus Status,
     ICollection<HistoryEntry> History
-)
+) : IEntityWithHistory
 {
     private static int currentId = 0;
     public static Transport CreateTransport(Manifest manifest)

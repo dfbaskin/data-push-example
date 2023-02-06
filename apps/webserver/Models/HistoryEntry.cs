@@ -11,3 +11,8 @@ public record HistoryEntry(
         );
     }
 }
+
+public interface IEntityWithHistory
+{
+    ICollection<HistoryEntry> History { get; }
+}

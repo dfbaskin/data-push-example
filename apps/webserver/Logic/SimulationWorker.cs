@@ -1,15 +1,20 @@
+using HotChocolate.Subscriptions;
+
 public sealed partial class SimulationWorker : BackgroundService
 {
     public SimulationWorker(
         CurrentData current,
+        ITopicEventSender sender,
         ILogger<SimulationWorker> logger
     )
     {
         Current = current ?? throw new ArgumentNullException(nameof(current));
+        Sender = sender ?? throw new ArgumentNullException(nameof(sender));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public CurrentData Current { get; }
+    public ITopicEventSender Sender { get; }
     public ILogger<SimulationWorker> Logger { get; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,7 +39,7 @@ public sealed partial class SimulationWorker : BackgroundService
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("Error executing task.", ex);
+                        Logger.LogError(ex, "Error executing task.");
                     }
                     finally
                     {
@@ -48,9 +53,8 @@ public sealed partial class SimulationWorker : BackgroundService
         }
     }
 
-    private async Task WaitForAFewSeconds(Context context, string message)
+    private async Task WaitForAFewSeconds(Context context)
     {
-        Logger.LogInformation(message);
         int seconds = Faker.RandomNumber.Next(3, 7);
         await Task.Delay(seconds * 1000, context.Token);
     }

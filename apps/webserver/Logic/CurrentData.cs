@@ -57,12 +57,12 @@ public class CurrentData
 
     public Configuration Configuration { get; }
 
-    public Driver? UpdateDriver(string driverId, Func<Driver, Driver> updateFn)
+    public UpdatedItem<Driver>? UpdateDriver(string driverId, Func<Driver, Driver> updateFn)
     {
         return UpdateItem(driverId, drivers, updateFn);
     }
 
-    public Vehicle? UpdateVehicle(string vehicleId, Func<Vehicle, Vehicle> updateFn)
+    public UpdatedItem<Vehicle>? UpdateVehicle(string vehicleId, Func<Vehicle, Vehicle> updateFn)
     {
         return UpdateItem(vehicleId, vehicles, updateFn);
     }
@@ -72,25 +72,28 @@ public class CurrentData
         return transports.TryAdd(transport.TransportId, transport);
     }
 
-    public Transport? UpdateTransport(string transportId, Func<Transport, Transport> updateFn)
+    public UpdatedItem<Transport>? UpdateTransport(string transportId, Func<Transport, Transport> updateFn)
     {
         return UpdateItem(transportId, transports, updateFn);
     }
 
-    private T? UpdateItem<T>(string itemId, ConcurrentDictionary<string, T> items, Func<T, T> updateFn)
-        where T : class
+    private UpdatedItem<T>? UpdateItem<T>(
+        string itemId,
+        ConcurrentDictionary<string, T> items,
+        Func<T, T> updateFn
+    ) where T : class
     {
-        if (!items.TryGetValue(itemId, out T? current))
+        if (!items.TryGetValue(itemId, out T? original))
         {
             return null;
         }
 
-        var updated = updateFn(current);
-        if (!items.TryUpdate(itemId, updated, current))
+        var updated = updateFn(original);
+        if (!items.TryUpdate(itemId, updated, original))
         {
             return null;
         }
 
-        return updated;
+        return new UpdatedItem<T>(itemId, original, updated);
     }
 }

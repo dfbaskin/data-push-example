@@ -11,7 +11,7 @@ public record Driver(
   string? GroupAssignment,
   DriverStatus Status,
   ICollection<HistoryEntry> History
-)
+) : IEntityWithHistory
 {
     public const int DriverCount = 15;
 

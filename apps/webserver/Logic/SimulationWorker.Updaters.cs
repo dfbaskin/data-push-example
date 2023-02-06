@@ -1,125 +1,135 @@
 public sealed partial class SimulationWorker
 {
-    private TransportContext UpdateDriver(
-        TransportContext context,
-        params string[] messages
-    ) => UpdateDriver(context, null, messages);
+    private record ItemUpdaterContext<T>(
+        Func<string, Func<T, T>, UpdatedItem<T>?> UpdateItem,
+        Func<T, TransportContext, TransportContext> UpdateTransportContext,
+        Func<TransportContext, string>? GetItemId = null,
+        Func<ICollection<HistoryEntry>, T, T>? ModifyHistory = null,
+        Func<UpdatedItem<T>, Task>? SendNotifications = null,
+        string? ItemId = null,
+        Func<T, T>? ModifyFn = null,
+        List<string>? Messages = null
+    ) where T : class;
 
-    private TransportContext UpdateDriver(
-        TransportContext context,
-        Func<Driver, Driver>? updateFn,
-        params string[] messages
-    )
+    private class ItemUpdater<T>
+        where T : class
     {
-        var driver = Current.UpdateDriver(context.Driver.DriverId, driver =>
+        public ItemUpdaterContext<T> Context { get; private set; }
+
+        public ItemUpdater(ItemUpdaterContext<T> context)
         {
-            if (updateFn != null)
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        public ItemUpdater<T> WithId(string itemId)
+        {
+            Context = Context with
             {
-                driver = updateFn(driver);
+                ItemId = itemId
+            };
+            return this;
+        }
+
+        public ItemUpdater<T> Modify(Func<T, T> modifyFn)
+        {
+            if (Context.ModifyFn != null)
+            {
+                throw new InvalidOperationException("Modify function has already been previously set.");
             }
-            if (messages.Length > 0)
+            Context = Context with
             {
-                driver = driver with
-                {
-                    History = messages.Aggregate(
-                        driver.History,
-                        (hist, message) => {
-                            return hist.AppendItem(HistoryEntry.CreateHistoryEntry(message));
-                        }
-                    )
+                ModifyFn = modifyFn ?? throw new ArgumentNullException(nameof(modifyFn))
+            };
+            return this;
+        }
+
+        public ItemUpdater<T> AddHistory(string message)
+        {
+            var messages = Context.Messages ?? new List<string>();
+            messages.Add(message);
+            Context = Context with
+            {
+                Messages = messages
+            };
+            return this;
+        }
+
+        public async Task<T?> Update()
+        {
+            var result = UpdateItem();
+            if (result == null)
+            {
+                return null;
+            }
+
+            if (Context.SendNotifications != null)
+            {
+                await Context.SendNotifications(result);
+            }
+
+            return result.Updated;
+        }
+
+        public async Task<TransportContext> Update(TransportContext transportContext)
+        {
+            if (string.IsNullOrWhiteSpace(Context.ItemId) && Context.GetItemId != null)
+            {
+                Context = Context with {
+                    ItemId = Context.GetItemId(transportContext)
                 };
             }
-            return driver;
-        });
-        if (driver == null)
-        {
-            throw new InvalidOperationException("Could not find driver entity in collection.");
-        }
-        return context with
-        {
-            Driver = driver
-        };
-    }
 
-    private TransportContext UpdateVehicle(
-        TransportContext context,
-        params string[] messages
-    ) => UpdateVehicle(context, null, messages);
-
-    private TransportContext UpdateVehicle(
-        TransportContext context,
-        Func<Vehicle, Vehicle>? updateFn,
-        params string[] messages
-    )
-    {
-        var vehicle = Current.UpdateVehicle(context.Vehicle.VehicleId, vehicle =>
-        {
-            if (updateFn != null)
+            var result = UpdateItem();
+            if (result == null)
             {
-                vehicle = updateFn(vehicle);
+                throw new InvalidOperationException($"Could not find {typeof(T).Name} entity in collection.");
             }
-            if (messages.Length > 0)
+
+            if (Context.SendNotifications != null)
             {
-                vehicle = vehicle with
+                await Context.SendNotifications(result);
+            }
+
+            return Context.UpdateTransportContext(result.Updated, transportContext);
+        }
+
+        private UpdatedItem<T>? UpdateItem()
+        {
+            if (string.IsNullOrWhiteSpace(Context.ItemId))
+            {
+                throw new InvalidOperationException($"Id of {typeof(T).Name} entity must be provided.");
+            }
+
+            return Context.UpdateItem(Context.ItemId, entity =>
+            {
+                if (Context.ModifyFn != null)
                 {
-                    History = messages.Aggregate(
-                        vehicle.History,
-                        (hist, message) => {
-                            return hist.AppendItem(HistoryEntry.CreateHistoryEntry(message));
-                        }
-                    )
-                };
-            }
-            return vehicle;
-        });
-        if (vehicle == null)
-        {
-            throw new InvalidOperationException("Could not find vehicle entity in collection.");
-        }
-        return context with
-        {
-            Vehicle = vehicle
-        };
-    }
+                    entity = Context.ModifyFn(entity);
+                }
 
-    private TransportContext UpdateTransport(
-        TransportContext context,
-        params string[] messages
-    ) => UpdateTransport(context, null, messages);
-
-    private TransportContext UpdateTransport(
-        TransportContext context,
-        Func<Transport, Transport>? updateFn,
-        params string[] messages
-    )
-    {
-        var transport = Current.UpdateTransport(context.Transport.TransportId, transport =>
-        {
-            if (updateFn != null)
-            {
-                transport = updateFn(transport);
-            }
-            if (messages.Length > 0)
-            {
-                transport = transport with
+                if (Context.Messages != null)
                 {
-                    History = messages.Aggregate(
-                        transport.History,
-                        (hist, message) => {
-                            return hist.AppendItem(HistoryEntry.CreateHistoryEntry(message));
-                        }
-                    )
-                };
-            }
-            return transport;
-        });
-        if (transport == null)
-        {
-            throw new InvalidOperationException("Could not find transport entity in collection.");
+                    if (entity is IEntityWithHistory value && Context.ModifyHistory != null)
+                    {
+                        ICollection<HistoryEntry> history = Context.Messages
+                            .Aggregate(
+                                new List<HistoryEntry>(value.History),
+                                (hist, message) =>
+                                {
+                                    hist.Append(HistoryEntry.CreateHistoryEntry(message));
+                                    return hist;
+                                }
+                            );
+                        entity = Context.ModifyHistory(history, entity);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"{typeof(T).Name} entity does not support history records.");
+                    }
+                }
+
+                return entity;
+            });
         }
-        return context with
-        {
-            Transport = transport
-        };
     }
 }

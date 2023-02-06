@@ -11,7 +11,7 @@ public record Vehicle(
   VehicleStatus Status,
   Location? Location,
   ICollection<HistoryEntry> History
-)
+) : IEntityWithHistory
 {
     private const int VehicleCount = 10;
 

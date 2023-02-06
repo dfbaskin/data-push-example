@@ -2,12 +2,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddGraphQLServer()
-    .AllowIntrospection(false)
     .AddQueryType<Query>()
+    .AddSubscriptionType<Subscription>()
     .AddTypeExtension<GroupExtensions>()
     .AddTypeExtension<DriverExtensions>()
     .AddTypeExtension<VehicleExtensions>()
-    .AddTypeExtension<TransportExtensions>();
+    .AddTypeExtension<TransportExtensions>()
+    .AddInMemorySubscriptions();
 
 builder.Services
     .AddSingleton<CurrentData>()
@@ -18,6 +19,8 @@ var app = builder.Build();
 app.MapGet("/api/ping", () => new {
   timestamp = DateTime.UtcNow
 });
+
+app.UseWebSockets();
 
 app.MapGraphQL();
 
