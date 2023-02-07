@@ -1,5 +1,5 @@
 import { GroupItem, GroupName } from '@example/dataui';
-import { useSubscription } from 'urql';
+import { useQuery, useSubscription } from 'urql';
 
 const groupQuery = `
     name
@@ -15,6 +15,14 @@ const groupQuery = `
         }
       }
     }
+`;
+
+const groupsQuery = `
+{
+  groups {
+${groupQuery}
+  }
+}
 `;
 
 const subscribeQuery = `
@@ -54,11 +62,21 @@ const defaultData: Data = {
 };
 
 export function Groups() {
-  const [{ data }] = useSubscription<SubscriptionData, Data>(
+  const [{ data: queryData, fetching }] = useQuery<Data>({
+    query: groupsQuery,
+  });
+
+  const [{ data: subscriptionData }] = useSubscription<SubscriptionData, Data>(
     {
       query: subscribeQuery,
+      pause: fetching,
     },
-    (current = defaultData, data) => {
+    (
+      current = {
+        groups: (queryData ?? defaultData).groups,
+      },
+      data
+    ) => {
       return {
         ...current,
         groups: current.groups.reduce(
@@ -74,8 +92,10 @@ export function Groups() {
     }
   );
 
-  const groups = (data ?? defaultData).groups;
-  const activeGroups = groups.filter((g) => g.count !== 0);
+  const { groups } = subscriptionData ?? queryData ?? defaultData;
+  const activeGroups = groups
+    .filter((g) => g.count !== 0)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div>

@@ -53,8 +53,10 @@ export function Groups() {
     reexecuteQuery();
   });
 
-  const groups = (data ?? defaultData).groups;
-  const activeGroups = groups.filter((g) => g.count !== 0);
+  const { groups } = data ?? defaultData;
+  const activeGroups = groups
+    .filter((g) => g.count !== 0)
+    .sort((a, b) => a.name.localeCompare(b.name));;
 
   return (
     <div>
