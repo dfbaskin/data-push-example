@@ -62,9 +62,9 @@ export function Groups() {
       element={activeTransports.map((t) => (
         <GeolocationVehicle
           key={t.transportId}
-          vehicleType={t.vehicle.vehicleType}
-          latitude={t.vehicle.location.latitude}
-          longitude={t.vehicle.location.longitude}
+          vehicleType={t.vehicle?.vehicleType}
+          latitude={t.vehicle?.location?.latitude}
+          longitude={t.vehicle?.location?.longitude}
         />
       ))}
     />

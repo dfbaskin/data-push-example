@@ -1,9 +1,14 @@
 .container {
   display: grid;
-  grid-template-columns: 2fr 3fr 2fr;
-  grid-template-rows: 3fr 3fr 4fr;
+  grid-template-columns: 30% 40% 30%;
+  grid-template-rows: 30% 30% 40%;
   grid-template-areas:
     'groups geolocation details'
     'groups geolocation details'
     'grid grid details';
+  > div {
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+  }
 }

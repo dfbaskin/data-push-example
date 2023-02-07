@@ -1,6 +1,10 @@
 import classNames from 'classnames';
 import styles from './geolocationVehicle.module.scss';
 
+function isValid(value?: number): value is number {
+  return value !== null && value !== undefined;
+}
+
 interface Props {
   vehicleType: 'Truck' | 'Van';
   latitude?: number;
@@ -9,7 +13,7 @@ interface Props {
 
 export function GeolocationVehicle(props: Props) {
   const { vehicleType, latitude, longitude } = props;
-  if (latitude === null || longitude === null) {
+  if (!isValid(latitude) || !isValid(longitude)) {
     return null;
   }
 
