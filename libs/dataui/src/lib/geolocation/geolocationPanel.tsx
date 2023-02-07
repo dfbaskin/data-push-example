@@ -40,7 +40,7 @@ export function GeolocationPanel(props: Props) {
   return (
     <div className={styles['panel']}>
       <svg viewBox={viewBox}>
-        <circle cx={center.x} cy={center.y} r="0.002" fill="blue" />
+        <circle cx={center.x} cy={center.y} r="0.002" fill="orange" />
         {element}
       </svg>
     </div>

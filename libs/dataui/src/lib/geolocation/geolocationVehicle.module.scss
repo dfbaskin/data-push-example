@@ -1,0 +1,13 @@
+.group {
+  transition: all 1s ease-in-out;
+  &:global(.truck) {
+    circle {
+      fill: brown;
+    }
+  }
+  &:global(.van) {
+    circle {
+      fill: blue;
+    }
+  }
+}
