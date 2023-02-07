@@ -1,4 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
+import { TruckSegments } from '../truck';
+import { VanSegments } from '../van';
 import { fetchCoordinates } from './fetchCoordinates';
 import styles from './geolocationPanel.module.scss';
 
@@ -40,7 +42,19 @@ export function GeolocationPanel(props: Props) {
   return (
     <div className={styles['panel']}>
       <svg viewBox={viewBox}>
+        <symbol id="truck-icon" fill="brown" viewBox="0 0 16 16">
+          <g transform="scale(0.09) translate(-116, -0)">
+            <TruckSegments />
+          </g>
+        </symbol>
+        <symbol id="van-icon" fill="blue" viewBox="0 0 32 32">
+          <g transform="scale(0.1) translate(-208, -0)">
+            <VanSegments />
+          </g>
+        </symbol>
         <circle cx={center.x} cy={center.y} r="0.002" fill="orange" />
+        {/* <use href="#truck-icon" x={center.x} y={center.y} /> */}
+        {/* <use href="#van-icon" x={center.x} y={center.y} /> */}
         {element}
       </svg>
     </div>
