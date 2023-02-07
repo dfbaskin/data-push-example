@@ -173,12 +173,12 @@ public sealed partial class SimulationWorker
         var destLocation = RandomLocation();
         var pace = 0.01;
         var distance = Math.Max(
-            Math.Abs(homeLocation.Lat - destLocation.Lat),
-            Math.Abs(homeLocation.Lng - destLocation.Lng)
+            Math.Abs(destLocation.Lat - homeLocation.Lat),
+            Math.Abs(destLocation.Lng - homeLocation.Lng)
         );
         var totalSeconds = distance / pace;
-        var latMultiplier = (homeLocation.Lat - destLocation.Lat) / totalSeconds;
-        var lngMultiplier = (homeLocation.Lng - destLocation.Lng) / totalSeconds;
+        var latMultiplier = (destLocation.Lat - homeLocation.Lat) / totalSeconds;
+        var lngMultiplier = (destLocation.Lng - homeLocation.Lng) / totalSeconds;
 
         context = await BeginTransport(context, homeLocation);
 
