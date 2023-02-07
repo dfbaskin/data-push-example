@@ -24,7 +24,7 @@ export function GroupName(props: Props) {
         <span className={iconClassName} onClick={toggleExpCol}>
           {icon}
         </span>
-        <span>{name}</span>
+        <span>{name} Group</span>
         <span>({count})</span>
       </div>
       {expanded && <div className={styles['groupItem']}>{element}</div>}
