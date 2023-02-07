@@ -4,3 +4,6 @@ export * from './lib/van';
 
 export * from './lib/groups/groupName';
 export * from './lib/groups/groupItem';
+
+export * from './lib/geolocation/geolocationPanel';
+export * from './lib/geolocation/geolocationVehicle';
