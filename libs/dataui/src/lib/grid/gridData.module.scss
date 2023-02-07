@@ -1,0 +1,10 @@
+.gridTheme {
+  width: 100%;
+  height: 100%;
+
+  &:global(.ag-theme-alpine) {
+    :global(.ag-header) {
+      font-style: italic;
+    }
+  }
+}

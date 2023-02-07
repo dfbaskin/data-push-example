@@ -2,7 +2,7 @@ import { GeolocationPanel, GeolocationVehicle } from '@example/dataui';
 import { useQuery } from 'urql';
 import { usePolling } from './usePolling';
 
-const mapQuery = `
+const geolocationQuery = `
 {
   activeTransports {
     transportId
@@ -48,7 +48,7 @@ const defaultData: Data = {
 
 export function Groups() {
   const [{ data }, reexecuteQuery] = useQuery<Data>({
-    query: mapQuery,
+    query: geolocationQuery,
     requestPolicy: 'network-only',
   });
   usePolling(() => {

@@ -7,3 +7,5 @@ export * from './lib/groups/groupItem';
 
 export * from './lib/geolocation/geolocationPanel';
 export * from './lib/geolocation/geolocationVehicle';
+
+export * from './lib/grid/gridData';
