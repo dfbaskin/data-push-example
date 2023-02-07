@@ -1,5 +1,5 @@
-import TestPing from "./testPing";
-import styles from "./home.module.scss";
+import TestPing from './testPing';
+import styles from './home.module.scss';
 
 export function Home() {
   return (

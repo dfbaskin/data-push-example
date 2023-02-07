@@ -5,7 +5,7 @@ const url = new URL('/graphql', globalThis.window.location.href);
 
 const client = createClient({
   url: url.toString(),
-  maskTypename: true
+  maskTypename: true,
 });
 
 export function GraphqlProvider({ children }: { children?: ReactNode }) {

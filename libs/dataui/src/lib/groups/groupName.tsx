@@ -17,19 +17,17 @@ export function GroupName(props: Props) {
     evt.preventDefault();
     setExpanded((v) => !v);
   };
-  const iconClassName = classNames(styles['expColIcon'], {expanded});
+  const iconClassName = classNames(styles['expColIcon'], { expanded });
   return (
     <>
-    <div className={styles['groupName']}>
-      <span className={iconClassName} onClick={toggleExpCol}>
-        {icon}
-      </span>
-      <span>{name}</span>
-      <span>({count})</span>
-    </div>
-    {expanded && (
-      <div className={styles['groupItem']}>{element}</div>
-    )}
+      <div className={styles['groupName']}>
+        <span className={iconClassName} onClick={toggleExpCol}>
+          {icon}
+        </span>
+        <span>{name}</span>
+        <span>({count})</span>
+      </div>
+      {expanded && <div className={styles['groupItem']}>{element}</div>}
     </>
   );
 }

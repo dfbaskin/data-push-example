@@ -5,7 +5,7 @@ import AppRoutes from './appRoutes';
 
 export function App() {
   return (
-    <div className={styles["layout"]}>
+    <div className={styles['layout']}>
       <Header />
       <AppRoutes />
     </div>

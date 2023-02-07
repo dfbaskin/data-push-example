@@ -1,1 +1,1 @@
-export * from "./lib/subscriptionExample";
+export * from './lib/subscriptionExample';

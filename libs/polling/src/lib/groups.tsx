@@ -56,7 +56,7 @@ export function Groups() {
   const { groups } = data ?? defaultData;
   const activeGroups = groups
     .filter((g) => g.count !== 0)
-    .sort((a, b) => a.name.localeCompare(b.name));;
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div>

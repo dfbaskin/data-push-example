@@ -1,1 +1,1 @@
-export * from "./lib/pollingExample";
+export * from './lib/pollingExample';

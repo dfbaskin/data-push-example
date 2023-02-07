@@ -12,12 +12,7 @@ interface Props {
 }
 
 export function GroupItem(props: Props) {
-  const {
-    driverId,
-    driverName,
-    vehicleId,
-    vehicleType
-  } = props;
+  const { driverId, driverName, vehicleId, vehicleType } = props;
 
   const getIcon = () => {
     switch (vehicleType) {
@@ -32,7 +27,9 @@ export function GroupItem(props: Props) {
   return (
     <div className={styles['groupItem']}>
       <span>{getIcon()}</span>
-      <span>{driverId}/{vehicleId}</span>
+      <span>
+        {driverId}/{vehicleId}
+      </span>
       <span>({driverName})</span>
     </div>
   );
