@@ -23,6 +23,16 @@ public sealed partial class SimulationWorker
 
     private async Task SendVehicleUpdates(UpdatedItem<Vehicle> result)
     {
-        await Task.CompletedTask;
+        var updated = result.Updated;
+
+        await Sender.SendAsync(nameof(Subscription.VehicleUpdated), updated);
+
+        var transport = Current.Transports
+            .Where(t => t.VehicleId == updated.VehicleId && t.Status != TransportStatus.Finished)
+            .FirstOrDefault();
+        if (transport != null)
+        {
+            await Sender.SendAsync(nameof(Subscription.TransportUpdated), transport);
+        }
     }
 }

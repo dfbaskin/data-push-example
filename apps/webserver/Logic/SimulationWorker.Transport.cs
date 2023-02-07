@@ -23,6 +23,8 @@ public sealed partial class SimulationWorker
 
     private async Task SendTransportUpdates(UpdatedItem<Transport> result)
     {
-        await Task.CompletedTask;
+        var updated = result.Updated;
+
+        await Sender.SendAsync(nameof(Subscription.TransportUpdated), updated);
     }
 }

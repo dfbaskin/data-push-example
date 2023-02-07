@@ -1,6 +1,7 @@
 import { DataUI } from '@example/dataui';
 import { GraphqlProvider } from './graphqlClient';
 import Groups from './groups';
+import Geolocation from './geolocation';
 
 function ToDo() {
   return <div>To Do</div>;
@@ -12,7 +13,7 @@ export function SubscriptionExample() {
       <DataUI
         groupsElement={<Groups />}
         gridElement={<ToDo />}
-        geolocationElement={<ToDo />}
+        geolocationElement={<Geolocation />}
         detailsElement={<ToDo />}
       />
     </GraphqlProvider>

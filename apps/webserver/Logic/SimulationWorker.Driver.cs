@@ -25,6 +25,9 @@ public sealed partial class SimulationWorker
     {
         var original = result.Original;
         var updated = result.Updated;
+
+        await Sender.SendAsync(nameof(Subscription.DriverUpdated), updated);
+
         async Task SendGroupChange(string? groupName)
         {
             if (!string.IsNullOrEmpty(groupName))
