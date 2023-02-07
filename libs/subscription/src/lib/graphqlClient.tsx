@@ -5,7 +5,6 @@ import { createClient as createWSClient } from 'graphql-ws';
 const url = new URL('/graphql', globalThis.window.location.href);
 const wsUrl = new URL('/graphql', globalThis.window.location.href);
 wsUrl.protocol = "ws:";
-wsUrl.port = "4202";
 
 const wsClient = createWSClient({
   url: wsUrl.toString(),
