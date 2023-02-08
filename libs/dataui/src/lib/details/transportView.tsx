@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { DetailItem } from './detailItem';
+import { HistoryItem } from './historyItem';
 import { Location } from './location';
 import styles from './transportView.module.scss';
 
@@ -54,6 +56,13 @@ export function TransportView(props: Props) {
       history
     },
   } = props;
+
+  const sorted = useMemo(() => {
+    return history.sort((a, b) => {
+      return a.timestampUTC.localeCompare(b.timestampUTC);
+    });
+  }, [history]);
+
   return (
     <div className={styles['view']}>
       <h2>Transport ({transportId})</h2>
@@ -100,6 +109,12 @@ export function TransportView(props: Props) {
         <DetailItem title="Location:">
           <Location location={vehicle.location} />
         </DetailItem>
+      </div>
+      <h2>History</h2>
+      <div>
+        {sorted.map((item, idx) => (
+          <HistoryItem key={idx} item={item} />
+        ))}
       </div>
     </div>
   );
