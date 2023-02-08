@@ -14,3 +14,4 @@ export * from './lib/grid/gridData';
 export * from './lib/details/detailsData';
 export * from './lib/details/transportView';
 export * from './lib/details/driverView';
+export * from './lib/details/vehicleView';
