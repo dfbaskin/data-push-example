@@ -59,6 +59,7 @@
     "react-dom": "18.2.0",
     "react-router-dom": "6.4.3",
     "tslib": "^2.3.0",
-    "urql": "^3.0.3"
+    "urql": "^3.0.3",
+    "zustand": "^4.3.2"
   }
 }

@@ -1,4 +1,5 @@
 export * from './lib/dataui';
+export * from './lib/store/dataUiStore';
 export * from './lib/truck';
 export * from './lib/van';
 
@@ -9,3 +10,6 @@ export * from './lib/geolocation/geolocationPanel';
 export * from './lib/geolocation/geolocationVehicle';
 
 export * from './lib/grid/gridData';
+
+export * from './lib/details/detailsData';
+export * from './lib/details/transportView';
