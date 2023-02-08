@@ -295,6 +295,7 @@ public sealed partial class SimulationWorker
                     Status = TransportStatus.Unloading
                 };
             })
+            .AddHistory($"Arrived at destination, unloading.")
             .Update(context);
 
         await WaitForAFewSeconds(context);
@@ -307,6 +308,7 @@ public sealed partial class SimulationWorker
                     Status = TransportStatus.Returning
                 };
             })
+            .AddHistory($"Finished unloading, returning home.")
             .Update(context);
 
         await WaitForAFewSeconds(context);
