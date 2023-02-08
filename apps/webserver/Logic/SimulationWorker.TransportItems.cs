@@ -326,7 +326,8 @@ public sealed partial class SimulationWorker
             {
                 return transport with
                 {
-                    Status = TransportStatus.Finished
+                    Status = TransportStatus.Finished,
+                    EndTimestampUTC = DateTime.UtcNow,
                 };
             })
             .AddHistory($"Finished transport.")
