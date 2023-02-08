@@ -1,4 +1,4 @@
-import { GridData } from '@example/dataui';
+import { GridData, GridDataType } from '@example/dataui';
 import { useQuery } from 'urql';
 import { usePolling } from './usePolling';
 
@@ -44,18 +44,6 @@ interface Data {
   }[];
 }
 
-interface GridData {
-  transportId: string;
-  transportStatus: string;
-  vehicleId: string;
-  vehicleType?: 'Truck' | 'Van';
-  latitude?: number;
-  longitude?: number;
-  address?: string;
-  driverId: string;
-  driverStatus?: string;
-}
-
 export function Grid() {
   const [{ data }, reexecuteQuery] = useQuery<Data>({
     query: gridQuery,
@@ -71,7 +59,7 @@ export function Grid() {
     }
   ).activeTransports
     .map((t) => {
-      const item: GridData = {
+      const item: GridDataType = {
         transportId: t.transportId,
         transportStatus: t.status,
         vehicleId: t.vehicle?.vehicleId ?? '?',

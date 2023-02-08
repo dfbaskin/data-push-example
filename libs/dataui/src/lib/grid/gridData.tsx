@@ -16,18 +16,20 @@ const columnDefs = [
   { field: 'driverStatus' },
 ];
 
+export interface GridDataType {
+  transportId: string;
+  transportStatus: string;
+  vehicleId: string;
+  vehicleType?: 'Truck' | 'Van';
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  driverId: string;
+  driverStatus?: string;
+}
+
 interface Props {
-  data: {
-    transportId: string;
-    transportStatus: string;
-    vehicleId: string;
-    vehicleType?: 'Truck' | 'Van';
-    latitude?: number;
-    longitude?: number;
-    address?: string;
-    driverId: string;
-    driverStatus?: string;
-  }[];
+  data: GridDataType[];
 }
 
 export function GridData(props: Props) {
