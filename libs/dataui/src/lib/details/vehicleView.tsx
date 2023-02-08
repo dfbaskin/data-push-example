@@ -25,13 +25,7 @@ interface Props {
 
 export function VehicleView(props: Props) {
   const {
-    data: {
-      vehicleId,
-      vehicleType,
-      status,
-      location,
-      history,
-    },
+    data: { vehicleId, vehicleType, status, location, history },
   } = props;
 
   const sorted = useMemo(() => {

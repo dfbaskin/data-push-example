@@ -53,7 +53,7 @@ export function TransportView(props: Props) {
       manifest,
       driver,
       vehicle,
-      history
+      history,
     },
   } = props;
 

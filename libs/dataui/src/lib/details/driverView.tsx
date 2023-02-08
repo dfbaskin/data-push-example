@@ -20,13 +20,7 @@ interface Props {
 
 export function DriverView(props: Props) {
   const {
-    data: {
-      driverId,
-      name,
-      groupAssignment,
-      status,
-      history
-    },
+    data: { driverId, name, groupAssignment, status, history },
   } = props;
 
   const sorted = useMemo(() => {

@@ -88,7 +88,9 @@ export function Geolocation() {
             }
             return list;
           },
-          data.transportUpdated.status === "FINISHED" ? [] : [data.transportUpdated]
+          data.transportUpdated.status === 'FINISHED'
+            ? []
+            : [data.transportUpdated]
         ),
       };
     }
