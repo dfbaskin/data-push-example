@@ -1,3 +1,4 @@
+import { formatDateText } from '../store/dateFormatter';
 import styles from './historyItem.module.scss';
 
 interface Props {
@@ -11,7 +12,7 @@ export function HistoryItem(props: Props) {
   const { item } = props;
   return (
     <div className={styles['item']}>
-      {item.timestampUTC} - {item.message}
+      {formatDateText(item.timestampUTC)} - {item.message}
     </div>
   );
 }

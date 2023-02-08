@@ -1,5 +1,6 @@
 export * from './lib/dataui';
 export * from './lib/store/dataUiStore';
+export * from './lib/store/dateFormatter';
 export * from './lib/truck';
 export * from './lib/van';
 

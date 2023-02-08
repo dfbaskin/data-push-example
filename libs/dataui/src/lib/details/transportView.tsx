@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatDateText } from '../store/dateFormatter';
 import { DetailItem } from './detailItem';
 import { HistoryItem } from './historyItem';
 import { Location } from './location';
@@ -69,12 +70,12 @@ export function TransportView(props: Props) {
       <div>
         <DetailItem title="ID:">{transportId}</DetailItem>
         <DetailItem title="Status:">{status}</DetailItem>
-        <DetailItem title="Begin:">{beginTimestampUTC}</DetailItem>
-        <DetailItem title="End:">{endTimestampUTC}</DetailItem>
+        <DetailItem title="Begin:">{formatDateText(beginTimestampUTC)}</DetailItem>
+        <DetailItem title="End:">{formatDateText(endTimestampUTC)}</DetailItem>
       </div>
       <h2>Manifest</h2>
       <div>
-        <DetailItem title="Created:">{manifest.createdTimestampUTC}</DetailItem>
+        <DetailItem title="Created:">{formatDateText(manifest.createdTimestampUTC)}</DetailItem>
         <table>
           <thead>
             <tr>
