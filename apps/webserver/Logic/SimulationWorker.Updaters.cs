@@ -116,7 +116,7 @@ public sealed partial class SimulationWorker
                                 new List<HistoryEntry>(value.History),
                                 (hist, message) =>
                                 {
-                                    hist.Append(HistoryEntry.CreateHistoryEntry(message));
+                                    hist.Add(HistoryEntry.CreateHistoryEntry(message));
                                     return hist;
                                 }
                             );
