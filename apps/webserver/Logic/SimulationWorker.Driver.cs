@@ -28,12 +28,16 @@ public sealed partial class SimulationWorker
 
         await Sender.SendAsync(nameof(Subscription.DriverUpdated), updated);
 
+        await Sender.SendAsync(
+            $"DriverByIdUpdated_{updated.DriverId}",
+            updated);
+
         async Task SendGroupChange(string? groupName)
         {
             if (!string.IsNullOrEmpty(groupName))
             {
                 var group = Current.Groups.Where(g => g.Name == groupName).Single();
-                await Sender.SendAsync(nameof(Subscription.GroupUpdated), group);
+                await SendGroupUpdates(group);
             }
         }
 

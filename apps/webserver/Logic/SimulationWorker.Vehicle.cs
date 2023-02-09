@@ -27,6 +27,10 @@ public sealed partial class SimulationWorker
 
         await Sender.SendAsync(nameof(Subscription.VehicleUpdated), updated);
 
+        await Sender.SendAsync(
+            $"VehicleByIdUpdated_{updated.VehicleId}",
+            updated);
+
         var transport = Current.Transports
             .Where(t => t.VehicleId == updated.VehicleId && t.Status != TransportStatus.Finished)
             .FirstOrDefault();

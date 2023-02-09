@@ -26,5 +26,9 @@ public sealed partial class SimulationWorker
         var updated = result.Updated;
 
         await Sender.SendAsync(nameof(Subscription.TransportUpdated), updated);
+
+        await Sender.SendAsync(
+            $"TransportByIdUpdated_{updated.TransportId}",
+            updated);
     }
 }
