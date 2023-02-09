@@ -1,7 +1,7 @@
 import { GridData, GridDataType } from '@example/dataui';
-import { useQuery, useSubscription } from 'urql';
+import { useQueryAndSubscription } from './useQueryAndSubscription';
 
-const gridDataQuery = `
+const sharedDataQuery = `
     transportId
     status
     vehicle {
@@ -19,10 +19,10 @@ const gridDataQuery = `
     }
 `;
 
-const gridQuery = `
+const dataQuery = `
 {
   activeTransports {
-${gridDataQuery}
+${sharedDataQuery}
   }
 }
 `;
@@ -30,12 +30,12 @@ ${gridDataQuery}
 const subscribeQuery = `
 subscription {
   transportUpdated {
-${gridDataQuery}
+${sharedDataQuery}
   }
 }
 `;
 
-interface GridQueryData {
+interface SharedData {
   transportId: string;
   status: string;
   vehicle: {
@@ -54,36 +54,39 @@ interface GridQueryData {
 }
 
 interface SubscriptionData {
-  transportUpdated: GridQueryData;
+  transportUpdated: SharedData;
 }
 
-interface Data {
-  activeTransports: GridQueryData[];
+interface QueryData {
+  activeTransports: SharedData[];
 }
 
-const defaultData: Data = {
-  activeTransports: [],
-};
+interface ResultData {
+  transports: SharedData[];
+}
 
 export function Grid() {
-  const [{ data: queryData, fetching }] = useQuery<Data>({
-    query: gridQuery,
-  });
-
-  const [{ data: subscriptionData }] = useSubscription<SubscriptionData, Data>(
-    {
-      query: subscribeQuery,
-      pause: fetching,
+  const [result] = useQueryAndSubscription<
+    SubscriptionData,
+    QueryData,
+    ResultData
+  >({
+    query: dataQuery,
+    subscription: subscribeQuery,
+    onQuery: (data) => {
+      return {
+        transports: data.activeTransports,
+      };
     },
-    (
-      current = {
-        activeTransports: (queryData ?? defaultData).activeTransports,
-      },
-      data
-    ) => {
+    onSubscribe: (data, current) => {
+      if (!current) {
+        current = {
+          transports: [],
+        };
+      }
       return {
         ...current,
-        activeTransports: current.activeTransports.reduce(
+        transports: current.transports.reduce(
           (list, transport) => {
             if (transport.transportId !== data.transportUpdated.transportId) {
               list.push(transport);
@@ -93,11 +96,15 @@ export function Grid() {
           [data.transportUpdated]
         ),
       };
-    }
-  );
+    },
+  });
 
-  const { activeTransports } = subscriptionData ?? queryData ?? defaultData;
-  const gridData = activeTransports
+  if (!result) {
+    return null;
+  }
+
+  const { transports } = result;
+  const data = transports
     .map((t) => {
       const item: GridDataType = {
         transportId: t.transportId,
@@ -114,7 +121,7 @@ export function Grid() {
     })
     .sort((a, b) => a.transportId.localeCompare(b.transportId));
 
-  return <GridData data={gridData} />;
+  return <GridData data={data} />;
 }
 
 export default Grid;
