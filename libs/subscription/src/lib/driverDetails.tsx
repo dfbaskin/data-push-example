@@ -42,10 +42,7 @@ interface Props {
 export function DriverDetails(props: Props) {
   const { driverId } = props;
 
-  const [result] = useQueryAndSubscription<
-    SubscriptionData,
-    QueryData
-  >({
+  const [result] = useQueryAndSubscription<SubscriptionData, QueryData>({
     query: dataQuery,
     subscription: subscribeQuery,
     variables: {
@@ -61,7 +58,7 @@ export function DriverDetails(props: Props) {
         current = {};
       }
       return {
-        driver: data.driverByIdUpdated
+        driver: data.driverByIdUpdated,
       };
     },
   });

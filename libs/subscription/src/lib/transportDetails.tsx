@@ -66,10 +66,7 @@ interface Props {
 export function TransportDetails(props: Props) {
   const { transportId } = props;
 
-  const [result] = useQueryAndSubscription<
-    SubscriptionData,
-    QueryData
-  >({
+  const [result] = useQueryAndSubscription<SubscriptionData, QueryData>({
     query: dataQuery,
     subscription: subscribeQuery,
     variables: {
@@ -85,7 +82,7 @@ export function TransportDetails(props: Props) {
         current = {};
       }
       return {
-        transport: data.transportByIdUpdated
+        transport: data.transportByIdUpdated,
       };
     },
   });

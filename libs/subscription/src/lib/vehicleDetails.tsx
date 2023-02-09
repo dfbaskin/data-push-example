@@ -46,10 +46,7 @@ interface Props {
 export function VehicleDetails(props: Props) {
   const { vehicleId } = props;
 
-  const [result] = useQueryAndSubscription<
-    SubscriptionData,
-    QueryData
-  >({
+  const [result] = useQueryAndSubscription<SubscriptionData, QueryData>({
     query: dataQuery,
     subscription: subscribeQuery,
     variables: {
@@ -65,7 +62,7 @@ export function VehicleDetails(props: Props) {
         current = {};
       }
       return {
-        vehicle: data.vehicleByIdUpdated
+        vehicle: data.vehicleByIdUpdated,
       };
     },
   });
