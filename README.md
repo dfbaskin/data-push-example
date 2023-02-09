@@ -2,6 +2,8 @@
 
 Experiments around pushing rapidly changing data to browser.
 
+![Application](app.png)
+
 Technologies used:
 
 - [Nx Build System](https://nx.dev)
