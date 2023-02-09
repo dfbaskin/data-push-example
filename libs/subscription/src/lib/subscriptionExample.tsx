@@ -3,10 +3,7 @@ import { GraphqlProvider } from './graphqlClient';
 import Groups from './groups';
 import Geolocation from './geolocation';
 import Grid from './grid';
-
-function ToDo() {
-  return <div>To Do</div>;
-}
+import Details from './details';
 
 export function SubscriptionExample() {
   return (
@@ -15,7 +12,7 @@ export function SubscriptionExample() {
         groupsElement={<Groups />}
         gridElement={<Grid />}
         geolocationElement={<Geolocation />}
-        detailsElement={<ToDo />}
+        detailsElement={<Details />}
       />
     </GraphqlProvider>
   );
