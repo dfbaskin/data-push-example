@@ -1,16 +1,24 @@
-import { CellClickedEvent } from 'ag-grid-community';
+import { CellClickedEvent, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import classNames from 'classnames';
 import { useDataUiStore } from '../store/dataUiStore';
 import styles from './gridData.module.scss';
+
+const formatter = new Intl.NumberFormat(undefined, {
+  maximumFractionDigits: 5,
+});
+
+function formatLatLong(params: ValueFormatterParams) {
+  return formatter.format(params.value);
+}
 
 const columnDefs = [
   { field: 'transportId' },
   { field: 'transportStatus' },
   { field: 'vehicleId' },
   { field: 'vehicleType' },
-  { field: 'latitude' },
-  { field: 'longitude' },
+  { field: 'latitude', valueFormatter: formatLatLong },
+  { field: 'longitude', valueFormatter: formatLatLong },
   { field: 'address' },
   { field: 'driverId' },
   { field: 'driverStatus' },
