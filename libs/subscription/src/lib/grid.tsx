@@ -1,9 +1,10 @@
-import { GridData, GridDataType } from '@example/dataui';
+import { GridData, GridDataType, isOlderThanSeconds } from '@example/dataui';
 import { useQueryAndSubscription } from './useQueryAndSubscription';
 
 const sharedDataQuery = `
     transportId
     status
+    endTimestampUTC
     vehicle {
       vehicleId
       vehicleType
@@ -38,6 +39,7 @@ ${sharedDataQuery}
 interface SharedData {
   transportId: string;
   status: string;
+  endTimestampUTC: string;
   vehicle: {
     vehicleId: string;
     vehicleType: 'Truck' | 'Van';
@@ -89,7 +91,9 @@ export function Grid() {
         transports: current.transports.reduce(
           (list, transport) => {
             if (transport.transportId !== data.transportUpdated.transportId) {
-              list.push(transport);
+              if (!shouldPurgeTransport(transport)) {
+                list.push(transport);
+              }
             }
             return list;
           },
@@ -125,3 +129,10 @@ export function Grid() {
 }
 
 export default Grid;
+
+function shouldPurgeTransport(transport: SharedData) {
+  return (
+    transport.status === 'FINISHED' &&
+    isOlderThanSeconds(transport.endTimestampUTC, 10)
+  );
+}
