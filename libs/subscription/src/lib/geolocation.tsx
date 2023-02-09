@@ -1,7 +1,7 @@
 import { GeolocationPanel, GeolocationVehicle } from '@example/dataui';
-import { useQuery, useSubscription } from 'urql';
+import { useQueryAndSubscription } from './useQueryAndSubscription';
 
-const transportQuery = `
+const sharedQuery = `
     transportId
     status
     vehicle {
@@ -18,10 +18,10 @@ const transportQuery = `
     }
 `;
 
-const transportsQuery = `
+const dataQuery = `
 {
   activeTransports {
-${transportQuery}
+${sharedQuery}
   }
 }
 `;
@@ -29,12 +29,12 @@ ${transportQuery}
 const subscribeQuery = `
 subscription {
   transportUpdated {
-${transportQuery}
+${sharedQuery}
   }
 }
 `;
 
-interface TransportData {
+interface SharedData {
   transportId: string;
   status: string;
   vehicle: {
@@ -52,36 +52,39 @@ interface TransportData {
 }
 
 interface SubscriptionData {
-  transportUpdated: TransportData;
+  transportUpdated: SharedData;
 }
 
-interface Data {
-  activeTransports: TransportData[];
+interface QueryData {
+  activeTransports: SharedData[];
 }
 
-const defaultData: Data = {
-  activeTransports: [],
-};
+interface ResultData {
+  transports: SharedData[];
+}
 
 export function Geolocation() {
-  const [{ data: queryData, fetching }] = useQuery<Data>({
-    query: transportsQuery,
-  });
-
-  const [{ data: subscriptionData }] = useSubscription<SubscriptionData, Data>(
-    {
-      query: subscribeQuery,
-      pause: fetching,
+  const [result] = useQueryAndSubscription<
+    SubscriptionData,
+    QueryData,
+    ResultData
+  >({
+    query: dataQuery,
+    subscription: subscribeQuery,
+    onQuery: (data) => {
+      return {
+        transports: data.activeTransports,
+      };
     },
-    (
-      current = {
-        activeTransports: (queryData ?? defaultData).activeTransports,
-      },
-      data
-    ) => {
+    onSubscribe: (data, current) => {
+      if (!current) {
+        current = {
+          transports: [],
+        };
+      }
       return {
         ...current,
-        activeTransports: current.activeTransports.reduce(
+        transports: current.transports.reduce(
           (list, transport) => {
             if (transport.transportId !== data.transportUpdated.transportId) {
               list.push(transport);
@@ -93,14 +96,18 @@ export function Geolocation() {
             : [data.transportUpdated]
         ),
       };
-    }
-  );
+    },
+  });
 
-  const { activeTransports } = subscriptionData ?? queryData ?? defaultData;
+  if (!result) {
+    return null;
+  }
+
+  const { transports } = result;
 
   return (
     <GeolocationPanel
-      element={activeTransports.map((t) => (
+      element={transports.map((t) => (
         <GeolocationVehicle
           key={t.transportId}
           vehicleType={t.vehicle?.vehicleType}

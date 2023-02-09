@@ -1,7 +1,7 @@
 import { GroupItem, GroupName } from '@example/dataui';
-import { useQuery, useSubscription } from 'urql';
+import { useQueryAndSubscription } from './useQueryAndSubscription';
 
-const groupQuery = `
+const sharedQuery = `
     name
     description
     count
@@ -17,10 +17,10 @@ const groupQuery = `
     }
 `;
 
-const groupsQuery = `
+const dataQuery = `
 {
   groups {
-${groupQuery}
+${sharedQuery}
   }
 }
 `;
@@ -28,12 +28,12 @@ ${groupQuery}
 const subscribeQuery = `
 subscription {
   groupUpdated {
-${groupQuery}
+${sharedQuery}
   }
 }
 `;
 
-interface GroupData {
+interface SharedData {
   name: string;
   description: string;
   count: number;
@@ -50,33 +50,36 @@ interface GroupData {
 }
 
 interface SubscriptionData {
-  groupUpdated: GroupData;
+  groupUpdated: SharedData;
 }
 
-interface Data {
-  groups: GroupData[];
+interface QueryData {
+  groups: SharedData[];
 }
 
-const defaultData: Data = {
-  groups: [],
-};
+interface ResultData {
+  groups: SharedData[];
+}
 
 export function Groups() {
-  const [{ data: queryData, fetching }] = useQuery<Data>({
-    query: groupsQuery,
-  });
-
-  const [{ data: subscriptionData }] = useSubscription<SubscriptionData, Data>(
-    {
-      query: subscribeQuery,
-      pause: fetching,
+  const [result] = useQueryAndSubscription<
+    SubscriptionData,
+    QueryData,
+    ResultData
+  >({
+    query: dataQuery,
+    subscription: subscribeQuery,
+    onQuery: (data) => {
+      return {
+        groups: data.groups,
+      };
     },
-    (
-      current = {
-        groups: (queryData ?? defaultData).groups,
-      },
-      data
-    ) => {
+    onSubscribe: (data, current) => {
+      if (!current) {
+        current = {
+          groups: [],
+        };
+      }
       return {
         ...current,
         groups: current.groups.reduce(
@@ -89,10 +92,14 @@ export function Groups() {
           [data.groupUpdated]
         ),
       };
-    }
-  );
+    },
+  });
 
-  const { groups } = subscriptionData ?? queryData ?? defaultData;
+  if (!result) {
+    return null;
+  }
+
+  const { groups } = result;
   const activeGroups = groups
     .filter((g) => g.count !== 0)
     .sort((a, b) => a.name.localeCompare(b.name));
