@@ -39,7 +39,7 @@ const sharedDataQuery = `
 const dataQuery = `
 query transport($id: String!) {
   transport(transportId: $id) {
-  ${sharedDataQuery}
+${sharedDataQuery}
   }
 }
 `;
