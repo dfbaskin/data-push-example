@@ -1,3 +1,5 @@
+using RecordProxy.Generator;
+
 public enum DriverStatus
 {
     Inactive,
@@ -5,6 +7,7 @@ public enum DriverStatus
     Active,
 }
 
+[GenerateProxy]
 public record Driver(
   string Name,
   string DriverId,

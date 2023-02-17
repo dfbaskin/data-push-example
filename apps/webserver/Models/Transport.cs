@@ -1,3 +1,5 @@
+using RecordProxy.Generator;
+
 public enum TransportStatus
 {
     Pending,
@@ -8,6 +10,7 @@ public enum TransportStatus
     Finished
 }
 
+[GenerateProxy]
 public record Transport(
     string TransportId,
     DateTime BeginTimestampUTC,
