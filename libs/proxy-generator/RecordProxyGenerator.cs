@@ -274,23 +274,6 @@ public static class {proxyName}Extensions
     }}
 ");
             }
-            else if (IsNullableType(prop.Type))
-            {
-                add($@"
-    public new {prop.Type} {name}
-    {{
-        get => base.{name};
-        init
-        {{
-            base.{name} = state.Handler.ReplaceNullableIfChanged(
-                state.ModelPath.AddPath(nameof({name})),
-                base.{name},
-                value
-            );
-        }}
-    }}
-");
-            }
             else
             {
                 add($@"
@@ -341,7 +324,4 @@ public static class {proxyName}Extensions
                     t.I.TypeArguments.Any(t => t.IsRecord);
             })
             .Any();
-
-    public static bool IsNullableType(ITypeSymbol symbol)
-        => symbol.NullableAnnotation == NullableAnnotation.Annotated;
 }

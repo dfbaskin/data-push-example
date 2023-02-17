@@ -4,7 +4,5 @@ public interface IChangeCollector
 {
     void Add(ModelPath modelPath, object? value);
     void Replace(ModelPath modelPath, object? value);
-    T ReplaceIfChanged<T>(ModelPath modelPath, T original, T updated)
-        where T : IEquatable<T>;
-    T? ReplaceNullableIfChanged<T>(ModelPath modelPath, T? original, T? updated);
+    T ReplaceIfChanged<T>(ModelPath modelPath, T original, T updated);
 }
