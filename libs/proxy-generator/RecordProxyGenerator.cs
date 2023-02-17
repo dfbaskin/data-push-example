@@ -121,7 +121,12 @@ public class RecordProxyGenerator : IIncrementalGenerator
 
 using RecordProxy.Generator;
 
-namespace {namespaceName};
+");
+        if (!string.IsNullOrWhiteSpace(namespaceName))
+        {
+            Add($"namespace {namespaceName};");
+        }
+        Add($@"
 
 public record {proxyName} : {baseName}
 {{
