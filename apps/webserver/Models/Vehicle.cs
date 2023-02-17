@@ -1,3 +1,5 @@
+using RecordProxy.Generator;
+
 public enum VehicleStatus
 {
     OutOfService,
@@ -5,11 +7,12 @@ public enum VehicleStatus
     Active
 }
 
+[GenerateProxy]
 public record Vehicle(
   string VehicleType,
   string VehicleId,
   VehicleStatus Status,
-  Location? Location,
+  Location Location,
   ICollection<HistoryEntry> History
 ) : IEntityWithHistory
 {
