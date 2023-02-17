@@ -6,4 +6,5 @@ public interface IChangeCollector
     void Replace(ModelPath modelPath, object? value);
     T ReplaceIfChanged<T>(ModelPath modelPath, T original, T updated)
         where T : IEquatable<T>;
+    T? ReplaceNullableIfChanged<T>(ModelPath modelPath, T? original, T? updated);
 }

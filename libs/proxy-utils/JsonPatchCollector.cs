@@ -24,7 +24,19 @@ public class JsonPatchCollector : IChangeCollector
     public T ReplaceIfChanged<T>(ModelPath modelPath, T original, T updated)
         where T : IEquatable<T>
     {
-        if (!EqualityComparer<T>.Default.Equals(original, updated))
+        bool hasChanged = !original.Equals(updated);
+        if (hasChanged)
+        {
+            Replace(modelPath, updated);
+        }
+
+        return updated;
+    }
+
+    public T? ReplaceNullableIfChanged<T>(ModelPath modelPath, T? original, T? updated)
+    {
+        bool hasChanged = original == null ? (updated != null) : !original.Equals(updated);
+        if (hasChanged)
         {
             Replace(modelPath, updated);
         }
