@@ -15,7 +15,7 @@
     "@nrwl/react": "15.7.1",
     "@nrwl/vite": "15.7.1",
     "@nrwl/workspace": "15.7.1",
-    "@nx-dotnet/core": "^1.19.0",
+    "@nx-dotnet/core": "1.19.1",
     "@testing-library/react": "13.4.0",
     "@types/jest": "28.1.1",
     "@types/node": "18.11.9",
