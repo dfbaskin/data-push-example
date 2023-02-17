@@ -1,8 +1,12 @@
+using RecordProxy.Generator;
+
+[GenerateProxy]
 public record GeolocationPoint(
     double Latitude,
     double Longitude
 );
 
+[GenerateProxy]
 public record GeolocationArea(
     GeolocationPoint TopLeft,
     GeolocationPoint Center,

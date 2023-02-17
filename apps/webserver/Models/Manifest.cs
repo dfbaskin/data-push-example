@@ -1,3 +1,6 @@
+using RecordProxy.Generator;
+
+[GenerateProxy]
 public record Manifest(
   DateTime CreatedTimestampUTC,
   ICollection<ManifestItem> Items,
@@ -20,6 +23,7 @@ public record Manifest(
     }
 }
 
+[GenerateProxy]
 public record ManifestItem(
     string ItemId,
     int Quantity,

@@ -1,3 +1,6 @@
+using RecordProxy.Generator;
+
+[GenerateProxy]
 public record HistoryEntry(
   DateTime TimestampUTC,
   string Message

@@ -1,5 +1,6 @@
+using RecordProxy.Generator;
 
-
+[GenerateProxy]
 public record Group(
   string Name,
   string Description
