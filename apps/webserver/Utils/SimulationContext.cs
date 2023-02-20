@@ -1,4 +1,4 @@
-internal record SimulationContext(
+public record SimulationContext(
     CancellationToken Token
 )
 {

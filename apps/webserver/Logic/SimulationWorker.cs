@@ -1,18 +1,15 @@
-using HotChocolate.Subscriptions;
-
 public sealed partial class SimulationWorker : BackgroundService
 {
     public SimulationWorker(
-        ModelInstanceUpdaterContext modelContext,
+        TransportsSimulation transports,
         ILogger<SimulationWorker> logger
     )
     {
-        ModelContext = modelContext ?? throw new ArgumentNullException(nameof(modelContext));
+        Transports = transports ?? throw new ArgumentNullException(nameof(transports));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public ModelInstanceUpdaterContext ModelContext { get; }
-    public CurrentData Current => ModelContext.Current;
+    public TransportsSimulation Transports { get; }
     public ILogger<SimulationWorker> Logger { get; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,13 +24,14 @@ public sealed partial class SimulationWorker : BackgroundService
         {
             if (currentTaskCount < maxTaskCount)
             {
-                #pragma warning disable 4014
+#pragma warning disable 4014
                 Task.Run(async () =>
+#pragma warning restore 4014
                 {
                     try
                     {
                         Interlocked.Increment(ref currentTaskCount);
-                        await TransportItems(context);
+                        await Transports.RunSimulation(context);
                     }
                     catch (Exception ex)
                     {
@@ -49,11 +47,5 @@ public sealed partial class SimulationWorker : BackgroundService
             int seconds = Faker.RandomNumber.Next(2, 10);
             await Task.Delay(seconds * 1000, context.Token);
         }
-    }
-
-    private async Task WaitForAFewSeconds(SimulationContext context)
-    {
-        int seconds = Faker.RandomNumber.Next(3, 7);
-        await Task.Delay(seconds * 1000, context.Token);
     }
 }

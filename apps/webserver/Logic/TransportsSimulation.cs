@@ -1,12 +1,32 @@
-public sealed partial class SimulationWorker
+public sealed class TransportsSimulation
 {
+    public TransportsSimulation(
+        ModelInstanceUpdaterContext modelContext,
+        ILogger<TransportsSimulation> logger
+    )
+    {
+        ModelContext = modelContext ?? throw new ArgumentNullException(nameof(modelContext));
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public ModelInstanceUpdaterContext ModelContext { get; }
+    public CurrentData Current => ModelContext.Current;
+    public ILogger<TransportsSimulation> Logger { get; }
+
     public const double CenterLatitude = 35.565752687910056;
     public const double CenterLongitude = -83.49854631914549;
     public const double LatitudeOffset = 0.15;
     public const double LongitudeOffset = 0.35;
     private const string HomeOfficeAddress = "Home Office";
 
-    private async Task TransportItems(SimulationContext contextBase)
+    private DriverInstanceUpdater UpdateDriver()
+        => new DriverInstanceUpdater(ModelContext);
+    private VehicleInstanceUpdater UpdateVehicle()
+        => new VehicleInstanceUpdater(ModelContext);
+    private TransportInstanceUpdater UpdateTransport()
+        => new TransportInstanceUpdater(ModelContext);
+
+    public async Task RunSimulation(SimulationContext contextBase)
     {
         var manifest = ReceiveManifest();
         var groupAssignment = GetGroupAssignment();
@@ -374,5 +394,11 @@ public sealed partial class SimulationWorker
         lat += (Random.Shared.NextDouble() * LatitudeOffset) - (LatitudeOffset / 2.0);
         lng += (Random.Shared.NextDouble() * LongitudeOffset) - (LongitudeOffset / 2.0);
         return (lat, lng);
+    }
+
+    private async Task WaitForAFewSeconds(SimulationContext context)
+    {
+        int seconds = Faker.RandomNumber.Next(3, 7);
+        await Task.Delay(seconds * 1000, context.Token);
     }
 }

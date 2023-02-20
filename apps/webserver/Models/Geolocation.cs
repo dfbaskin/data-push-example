@@ -15,20 +15,20 @@ public record GeolocationArea(
 {
     public static GeolocationArea GetGeolocationArea()
     {
-        double latOffs = SimulationWorker.LatitudeOffset / 2.0;
-        double lngOffs = SimulationWorker.LongitudeOffset / 2.0;
+        double latOffs = TransportsSimulation.LatitudeOffset / 2.0;
+        double lngOffs = TransportsSimulation.LongitudeOffset / 2.0;
         return new GeolocationArea(
             TopLeft: new GeolocationPoint(
-                Latitude: SimulationWorker.CenterLatitude - latOffs,
-                Longitude: SimulationWorker.CenterLongitude - lngOffs
+                Latitude: TransportsSimulation.CenterLatitude - latOffs,
+                Longitude: TransportsSimulation.CenterLongitude - lngOffs
             ),
             Center: new GeolocationPoint(
-                Latitude: SimulationWorker.CenterLatitude,
-                Longitude: SimulationWorker.CenterLongitude
+                Latitude: TransportsSimulation.CenterLatitude,
+                Longitude: TransportsSimulation.CenterLongitude
             ),
             BottomRight: new GeolocationPoint(
-                Latitude: SimulationWorker.CenterLatitude + latOffs,
-                Longitude: SimulationWorker.CenterLongitude + lngOffs
+                Latitude: TransportsSimulation.CenterLatitude + latOffs,
+                Longitude: TransportsSimulation.CenterLongitude + lngOffs
             )
         );
     }
