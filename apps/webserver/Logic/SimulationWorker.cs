@@ -3,18 +3,17 @@ using HotChocolate.Subscriptions;
 public sealed partial class SimulationWorker : BackgroundService
 {
     public SimulationWorker(
-        CurrentData current,
-        ITopicEventSender sender,
+        ModelInstanceUpdaterContext modelContext,
         ILogger<SimulationWorker> logger
     )
     {
-        Current = current ?? throw new ArgumentNullException(nameof(current));
-        Sender = sender ?? throw new ArgumentNullException(nameof(sender));
+        ModelContext = modelContext ?? throw new ArgumentNullException(nameof(modelContext));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public CurrentData Current { get; }
-    public ITopicEventSender Sender { get; }
+    public ModelInstanceUpdaterContext ModelContext { get; }
+    public CurrentData Current => ModelContext.Current;
+    public ITopicEventSender Sender => ModelContext.Sender;
     public ILogger<SimulationWorker> Logger { get; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

@@ -14,6 +14,7 @@ builder.Services
 
 builder.Services
     .AddSingleton<CurrentData>()
+    .AddSingleton<ModelInstanceUpdaterContext>()
     .AddHostedService<SimulationWorker>();
 
 var app = builder.Build();

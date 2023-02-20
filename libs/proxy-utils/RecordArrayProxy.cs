@@ -32,6 +32,16 @@ public class RecordArrayProxy<TModel, TModelProxy>
         return this;
     }
 
+    public RecordArrayProxy<TModel, TModelProxy> Add(IEnumerable<TModel> items)
+    {
+        foreach (var item in items)
+        {
+            Add(item);
+        }
+
+        return this;
+    }
+
     public ICollection<TModel> ToCollection(RecordArrayProxy<TModel, TModelProxy>? updated = null)
     {
         return (updated ?? this).Unwrap().ToList();

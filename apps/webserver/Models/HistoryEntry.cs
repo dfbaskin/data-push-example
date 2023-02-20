@@ -15,6 +15,7 @@ public record HistoryEntry(
     }
 }
 
+// TODO: Remove
 public interface IEntityWithHistory
 {
     ICollection<HistoryEntry> History { get; }
