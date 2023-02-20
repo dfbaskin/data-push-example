@@ -18,7 +18,7 @@ public sealed partial class SimulationWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var context = new Context(
+        var context = new SimulationContext(
             Token: stoppingToken
         );
 
@@ -52,19 +52,9 @@ public sealed partial class SimulationWorker : BackgroundService
         }
     }
 
-    private async Task WaitForAFewSeconds(Context context)
+    private async Task WaitForAFewSeconds(SimulationContext context)
     {
         int seconds = Faker.RandomNumber.Next(3, 7);
         await Task.Delay(seconds * 1000, context.Token);
-    }
-
-    private record Context(
-        CancellationToken Token
-    )
-    {
-        public void VerifyIsActive()
-        {
-            Token.ThrowIfCancellationRequested();
-        }
     }
 }

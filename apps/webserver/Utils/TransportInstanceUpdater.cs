@@ -2,11 +2,11 @@ using RecordProxy.Generator;
 
 internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport, TransportProxy>
 {
-    public CurrentData Current { get; }
+    public ModelInstanceUpdaterContext ModelContext { get; }
 
-    public TransportInstanceUpdater(CurrentData current)
+    public TransportInstanceUpdater(ModelInstanceUpdaterContext modelContext)
     {
-        Current = current ?? throw new ArgumentNullException(nameof(current));
+        ModelContext = modelContext ?? throw new ArgumentNullException(nameof(modelContext));
     }
 
     protected override string GetInstanceId(TransportInstanceContext context)
@@ -19,7 +19,7 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
 
     protected override UpdatedItem<Transport>? UpdateItem(IChangeCollector collector, string instanceId)
     {
-        return Current.UpdateTransport(instanceId, original =>
+        return ModelContext.Current.UpdateTransport(instanceId, original =>
             original.Capture(collector, proxy =>
             {
                 if (ModifyFn != null)

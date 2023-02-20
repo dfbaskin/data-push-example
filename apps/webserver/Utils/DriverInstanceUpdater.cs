@@ -2,11 +2,11 @@ using RecordProxy.Generator;
 
 internal sealed class DriverInstanceUpdater : ModelInstanceUpdater<Driver, DriverProxy>
 {
-    public CurrentData Current { get; }
+    public ModelInstanceUpdaterContext ModelContext { get; }
 
-    public DriverInstanceUpdater(CurrentData current)
+    public DriverInstanceUpdater(ModelInstanceUpdaterContext modelContext)
     {
-        Current = current ?? throw new ArgumentNullException(nameof(current));
+        ModelContext = modelContext ?? throw new ArgumentNullException(nameof(modelContext));
     }
 
     protected override string GetInstanceId(TransportInstanceContext context)
@@ -19,7 +19,7 @@ internal sealed class DriverInstanceUpdater : ModelInstanceUpdater<Driver, Drive
 
     protected override UpdatedItem<Driver>? UpdateItem(IChangeCollector collector, string instanceId)
     {
-        return Current.UpdateDriver(instanceId, original =>
+        return ModelContext.Current.UpdateDriver(instanceId, original =>
             original.Capture(collector, proxy =>
             {
                 if (ModifyFn != null)
