@@ -13,7 +13,8 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
         => context.TransportId;
 
     protected override TransportInstanceContext UpdateContext(TransportInstanceContext context, Transport updated)
-        => context with {
+        => context with
+        {
             Transport = updated
         };
 
@@ -29,7 +30,8 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
 
                 if (HistoryToAdd != null)
                 {
-                    proxy = proxy with {
+                    proxy = proxy with
+                    {
                         History = proxy.History.Add(HistoryToAdd)
                     };
                 }
@@ -37,5 +39,11 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
                 return proxy;
             })
         );
+    }
+
+    protected override async Task SendNotifications(UpdatedItem<Transport> result)
+    {
+        var updated = result.Updated;
+        await ModelContext.Subscriptions.SendTransportUpdate(updated);
     }
 }

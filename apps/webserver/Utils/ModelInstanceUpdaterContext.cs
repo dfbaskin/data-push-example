@@ -1,16 +1,14 @@
-using HotChocolate.Subscriptions;
-
 public class ModelInstanceUpdaterContext
 {
     public ModelInstanceUpdaterContext(
         CurrentData current,
-        ITopicEventSender sender
+        SubscriptionUpdates subscriptions
     )
     {
         Current = current ?? throw new ArgumentNullException(nameof(current));
-        Sender = sender ?? throw new ArgumentNullException(nameof(sender));
+        Subscriptions = subscriptions ?? throw new ArgumentNullException(nameof(subscriptions));
     }
 
     public CurrentData Current { get; }
-    public ITopicEventSender Sender { get; }
+    public SubscriptionUpdates Subscriptions { get; }
 }

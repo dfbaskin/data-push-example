@@ -13,7 +13,8 @@ internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, Veh
         => context.VehicleId;
 
     protected override TransportInstanceContext UpdateContext(TransportInstanceContext context, Vehicle updated)
-        => context with {
+        => context with
+        {
             Vehicle = updated
         };
 
@@ -29,7 +30,8 @@ internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, Veh
 
                 if (HistoryToAdd != null)
                 {
-                    proxy = proxy with {
+                    proxy = proxy with
+                    {
                         History = proxy.History.Add(HistoryToAdd)
                     };
                 }
@@ -37,5 +39,20 @@ internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, Veh
                 return proxy;
             })
         );
+    }
+
+    protected override async Task SendNotifications(UpdatedItem<Vehicle> result)
+    {
+        var updated = result.Updated;
+
+        await ModelContext.Subscriptions.SendVehicleUpdate(updated);
+
+        var transport = ModelContext.Current.Transports
+            .Where(t => t.Status != TransportStatus.Finished && t.VehicleId == updated.VehicleId)
+            .FirstOrDefault();
+        if (transport != null)
+        {
+            await ModelContext.Subscriptions.SendTransportUpdate(transport);
+        }
     }
 }

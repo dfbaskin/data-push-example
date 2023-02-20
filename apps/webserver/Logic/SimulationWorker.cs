@@ -13,7 +13,6 @@ public sealed partial class SimulationWorker : BackgroundService
 
     public ModelInstanceUpdaterContext ModelContext { get; }
     public CurrentData Current => ModelContext.Current;
-    public ITopicEventSender Sender => ModelContext.Sender;
     public ILogger<SimulationWorker> Logger { get; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

@@ -66,7 +66,7 @@ internal abstract class ModelInstanceUpdater<TModel, TModelProxy>
 
     protected abstract string GetInstanceId(TransportInstanceContext context);
     protected abstract TransportInstanceContext UpdateContext(TransportInstanceContext context, TModel updated);
-    protected virtual Task SendNotifications(UpdatedItem<TModel>? result)
+    protected virtual Task SendNotifications(UpdatedItem<TModel> result)
     {
         return Task.CompletedTask;
     }
