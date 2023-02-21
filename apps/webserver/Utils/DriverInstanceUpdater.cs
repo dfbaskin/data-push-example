@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using RecordProxy.Generator;
 
 internal sealed class DriverInstanceUpdater : ModelInstanceUpdater<Driver, DriverProxy>
@@ -41,7 +42,7 @@ internal sealed class DriverInstanceUpdater : ModelInstanceUpdater<Driver, Drive
         );
     }
 
-    protected override async Task SendNotifications(UpdatedItem<Driver> result)
+    protected override async Task SendNotifications(UpdatedItem<Driver> result, JsonPatchDocument patches)
     {
         var original = result.Original;
         var updated = result.Updated;

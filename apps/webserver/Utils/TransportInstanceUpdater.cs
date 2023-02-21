@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using RecordProxy.Generator;
 
 internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport, TransportProxy>
@@ -41,7 +42,7 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
         );
     }
 
-    protected override async Task SendNotifications(UpdatedItem<Transport> result)
+    protected override async Task SendNotifications(UpdatedItem<Transport> result, JsonPatchDocument patches)
     {
         var updated = result.Updated;
         await ModelContext.Subscriptions.SendTransportUpdate(updated);

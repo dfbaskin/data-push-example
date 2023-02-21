@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using RecordProxy.Generator;
 
 internal abstract class ModelInstanceUpdater<TModel, TModelProxy>
@@ -38,13 +39,11 @@ internal abstract class ModelInstanceUpdater<TModel, TModelProxy>
 
     public async Task<TModel?> Update()
     {
-        var result = UpdateItem();
+        var result = await UpdateItem();
         if (result == null)
         {
             return null;
         }
-
-        await SendNotifications(result);
 
         return result.Updated;
     }
@@ -53,27 +52,21 @@ internal abstract class ModelInstanceUpdater<TModel, TModelProxy>
     {
         InstanceId = string.IsNullOrWhiteSpace(InstanceId) ? GetInstanceId(context) : InstanceId;
 
-        var result = UpdateItem();
+        var result = await UpdateItem();
         if (result == null)
         {
             throw new InvalidOperationException($"Could not find {typeof(TModel).Name} entity in collection.");
         }
-
-        await SendNotifications(result);
 
         return UpdateContext(context, result.Updated);
     }
 
     protected abstract string GetInstanceId(TransportInstanceContext context);
     protected abstract TransportInstanceContext UpdateContext(TransportInstanceContext context, TModel updated);
-    protected virtual Task SendNotifications(UpdatedItem<TModel> result)
-    {
-        return Task.CompletedTask;
-    }
-
+    protected abstract Task SendNotifications(UpdatedItem<TModel> result, JsonPatchDocument patches);
     protected abstract UpdatedItem<TModel>? UpdateItem(IChangeCollector collector, string instanceId);
 
-    private UpdatedItem<TModel>? UpdateItem()
+    private async Task<UpdatedItem<TModel>?> UpdateItem()
     {
         if (string.IsNullOrWhiteSpace(InstanceId))
         {
@@ -82,6 +75,13 @@ internal abstract class ModelInstanceUpdater<TModel, TModelProxy>
 
         var collector = new JsonPatchCollector();
 
-        return UpdateItem(collector, InstanceId);
+        var result = UpdateItem(collector, InstanceId);
+
+        if (result != null)
+        {
+            await SendNotifications(result, collector.GetOperations());
+        }
+
+        return result;
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using RecordProxy.Generator;
 
 internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, VehicleProxy>
@@ -41,7 +42,7 @@ internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, Veh
         );
     }
 
-    protected override async Task SendNotifications(UpdatedItem<Vehicle> result)
+    protected override async Task SendNotifications(UpdatedItem<Vehicle> result, JsonPatchDocument patches)
     {
         var updated = result.Updated;
 
