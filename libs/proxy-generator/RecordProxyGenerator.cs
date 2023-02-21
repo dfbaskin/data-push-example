@@ -248,7 +248,8 @@ public static class {proxyName}Extensions
         get => Get{arrayName}();
         init
         {{
-            base.{name} = Get{arrayName}().ToCollection(value);
+            {arrayName} = value;
+            base.{name} = value.ToCollection(value);
         }}
     }}
 ");
@@ -269,6 +270,7 @@ public static class {proxyName}Extensions
         get => Get{name}Proxy();
         init
         {{
+            {proxyName} = value;
             base.{name} = value;
         }}
     }}
@@ -300,7 +302,7 @@ public static class {proxyName}Extensions
         {
             if (IsCollectionType(prop.Type))
             {
-                add($@"            {name}: Get{name}ArrayProxy().ToCollection(){suffix}");
+                add($@"            {name}: this.{name}.ToCollection(){suffix}");
             }
             else if(prop.Type.IsRecord)
             {

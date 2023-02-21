@@ -1,45 +1,47 @@
 ﻿namespace RecordProxy.Generator;
 
-public class RecordArrayProxy<TModel, TModelProxy>
+public record RecordArrayProxy<TModel, TModelProxy>(
+    ChangeCollectorState State,
+    IProxyWrapper<TModel, TModelProxy> Wrapper,
+    ICollection<TModel>? Items = null
+)
     where TModel : class
     where TModelProxy : class, TModel
 {
-    private readonly ChangeCollectorState state;
-    private readonly IProxyWrapper<TModel, TModelProxy> wrapper;
-    private List<TModel> items;
-
-    public RecordArrayProxy(
-        ChangeCollectorState state,
-        IProxyWrapper<TModel, TModelProxy> wrapper,
-        IEnumerable<TModel>? items = null
-    )
-    {
-        this.state = state ?? throw new ArgumentNullException(nameof(state));
-        this.wrapper = wrapper ?? throw new ArgumentNullException(nameof(wrapper));
-        this.items = new List<TModel>(items ?? Enumerable.Empty<TModel>());
-    }
-
-    public int Count => items.Count;
+    public int Count => Items?.Count ?? 0;
 
     public RecordArrayProxy<TModel, TModelProxy> Add(TModel item)
     {
-        var index = items.Count;
-        state.Handler.Add(state.ModelPath.AddPath(index), item);
+        var index = Count;
+        State.Handler.Add(State.ModelPath.AddPath(index), item);
 
-        var proxy = wrapper.Wrap(item, state.AddPath(index));
-        items.Add(proxy);
+        var proxy = Wrapper.Wrap(item, State.AddPath(index));
+        var list = GetItems().Concat(Enumerable.Repeat(item, 1)).ToList();
 
-        return this;
+        return new RecordArrayProxy<TModel, TModelProxy>(
+            State: State,
+            Wrapper: Wrapper,
+            Items: list
+        );
     }
 
     public RecordArrayProxy<TModel, TModelProxy> Add(IEnumerable<TModel> items)
     {
+        var list = GetItems().ToList();
         foreach (var item in items)
         {
-            Add(item);
+            var index = Count;
+            State.Handler.Add(State.ModelPath.AddPath(index), item);
+
+            var proxy = Wrapper.Wrap(item, State.AddPath(index));
+            list.Add(item);
         }
 
-        return this;
+        return new RecordArrayProxy<TModel, TModelProxy>(
+            State: State,
+            Wrapper: Wrapper,
+            Items: list
+        );
     }
 
     public ICollection<TModel> ToCollection(RecordArrayProxy<TModel, TModelProxy>? updated = null)
@@ -49,11 +51,16 @@ public class RecordArrayProxy<TModel, TModelProxy>
 
     public IEnumerable<TModel> Unwrap()
     {
-        return items
+        return GetItems()
             .Select(item =>
                 item is TModelProxy proxy
-                    ? wrapper.UnWrap(proxy)
+                    ? Wrapper.UnWrap(proxy)
                     : item
             );
+    }
+
+    private IEnumerable<TModel> GetItems()
+    {
+        return Items ?? Enumerable.Empty<TModel>();
     }
 }
