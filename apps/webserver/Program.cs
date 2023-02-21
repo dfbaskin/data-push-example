@@ -17,7 +17,8 @@ builder.Services
     .AddSingleton<ModelInstanceUpdaterContext>()
     .AddSingleton<SubscriptionUpdates>()
     .AddSingleton<TransportsSimulation>()
-    .AddHostedService<SimulationWorker>();
+    .AddHostedService<SimulationWorker>()
+    .AddScoped<DeltasStream>();
 
 var app = builder.Build();
 
@@ -47,6 +48,7 @@ app.MapGet("/api/ping", () => new {
 });
 
 app.UseWebSockets();
+app.UseDeltasWebSocketStreams();
 
 app.MapGraphQL();
 
