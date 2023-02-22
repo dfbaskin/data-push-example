@@ -1,49 +1,13 @@
 import { TransportView, TransportViewData } from '@example/dataui';
-import { useQuery } from 'urql';
-import { usePolling } from './usePolling';
-
-const transportQuery = `
-query transport($id: String!) {
-  transport(transportId: $id) {
-    transportId
-    status
-    beginTimestampUTC
-    endTimestampUTC
-    manifest {
-      createdTimestampUTC
-      items {
-        itemId
-        quantity
-        description
-      }
-    }
-    driver {
-      driverId
-      name
-      groupAssignment
-      status
-    }
-    vehicle {
-      vehicleId
-      vehicleType
-      status
-      location {
-        latitude
-        longitude
-        address
-      }
-    }
-    history {
-      timestampUTC
-      message
-    }
-  }
-}
-`;
-
-interface Data {
-  transport: TransportViewData;
-}
+import { useEffect, useState } from 'react';
+import {
+  deltasStreamObservable,
+  isInitialData,
+  isPatchesData,
+  requestDeltasStream,
+} from './deltasStreamObservable';
+import { tap } from 'rxjs';
+import { applyPatch } from 'fast-json-patch';
 
 interface Props {
   transportId: string;
@@ -51,22 +15,43 @@ interface Props {
 
 export function TransportDetails(props: Props) {
   const { transportId } = props;
-  const [{ data }, reexecuteQuery] = useQuery<Data>({
-    query: transportQuery,
-    requestPolicy: 'network-only',
-    variables: {
+  const [data, setData] = useState<TransportViewData | undefined>();
+
+  useEffect(() => {
+    const subscription = deltasStreamObservable()
+      .pipe(
+        tap((data) => {
+          if (
+            data.streamType === 'TRANSPORT_DETAILS' &&
+            data.id === transportId
+          ) {
+            if (isInitialData(data)) {
+              setData(data.initial as TransportViewData);
+            } else if (isPatchesData(data)) {
+              setData((doc) => {
+                if (!doc) {
+                  return undefined;
+                }
+                return applyPatch(doc, data.patches, false, false).newDocument;
+              });
+            }
+          }
+        })
+      )
+      .subscribe();
+    requestDeltasStream({
+      streamType: 'TRANSPORT_DETAILS',
+      subscribe: true,
       id: transportId,
-    },
-  });
-  usePolling(() => {
-    reexecuteQuery();
-  });
+    });
+    return () => subscription.unsubscribe();
+  }, [transportId]);
 
   if (!data) {
     return null;
   }
 
-  return <TransportView data={data.transport} />;
+  return <TransportView data={data} />;
 }
 
 export default TransportDetails;
