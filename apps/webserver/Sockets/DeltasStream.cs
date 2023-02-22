@@ -12,12 +12,6 @@ public class DeltasStream
         WebSocket Socket
     )
     {
-        public static JsonSerializerOptions SerializerOptions { get; } =
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            };
-
         public IReadOnlyCollection<DeltasStreamRequest> RequestedStreams { get; set; }
             = new List<DeltasStreamRequest>();
     }
@@ -87,9 +81,9 @@ public class DeltasStream
 
     private async Task SendDeltaChanges(DeltasState state, CancellationToken token)
     {
-        while(await state.Channel.Reader.WaitToReadAsync(token))
+        while (await state.Channel.Reader.WaitToReadAsync(token))
         {
-            await foreach(var updatedStream in state.Channel.Reader.ReadAllAsync(token))
+            await foreach (var updatedStream in state.Channel.Reader.ReadAllAsync(token))
             {
                 if (token.IsCancellationRequested)
                 {
@@ -101,9 +95,7 @@ public class DeltasStream
                     continue;
                 }
 
-                var data = JsonSerializer.Serialize(updatedStream);
-                var buffer = System.Text.Encoding.UTF8.GetBytes(data);
-
+                var buffer = System.Text.Encoding.UTF8.GetBytes(updatedStream.JsonDocument);
                 await state.Socket.SendAsync(
                     new ArraySegment<byte>(buffer),
                     WebSocketMessageType.Text,
@@ -136,6 +128,10 @@ public class DeltasStream
                     if (request != null)
                     {
                         state.RequestedStreams = GetUpdatedRequestedStreamList(state, request).ToList();
+                        if (request.Subscribe)
+                        {
+                            await QueueInitialDocument(state, request);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -152,6 +148,58 @@ public class DeltasStream
         );
 
         state.Channel.Writer.Complete();
+    }
+
+    private async Task QueueInitialDocument(DeltasState state, DeltasStreamRequest request)
+    {
+        switch (request.StreamType)
+        {
+            case DeltasStreamType.Groups:
+                break;
+            case DeltasStreamType.Geolocation:
+                break;
+            case DeltasStreamType.Transports:
+                break;
+            case DeltasStreamType.TransportDetails:
+                var transport = Current.Transports.FirstOrDefault(t => t.TransportId == request.Id);
+                if (transport != null)
+                {
+                    await state.Channel.Writer.WriteAsync(
+                        DeltasStreamUpdated.ForInitialDocument(
+                            DeltasStreamType.TransportDetails,
+                            transport.TransportId,
+                            transport
+                        )
+                    );
+                }
+                break;
+            case DeltasStreamType.VehicleDetails:
+                var vehicle = Current.Vehicles.FirstOrDefault(t => t.VehicleId == request.Id);
+                if (vehicle != null)
+                {
+                    await state.Channel.Writer.WriteAsync(
+                        DeltasStreamUpdated.ForInitialDocument(
+                            DeltasStreamType.VehicleDetails,
+                            vehicle.VehicleId,
+                            vehicle
+                        )
+                    );
+                }
+                break;
+            case DeltasStreamType.DriverDetails:
+                var driver = Current.Drivers.FirstOrDefault(t => t.DriverId == request.Id);
+                if (driver != null)
+                {
+                    await state.Channel.Writer.WriteAsync(
+                        DeltasStreamUpdated.ForInitialDocument(
+                            DeltasStreamType.DriverDetails,
+                            driver.DriverId,
+                            driver
+                        )
+                    );
+                }
+                break;
+        }
     }
 
     private IEnumerable<DeltasStreamRequest> GetUpdatedRequestedStreamList(DeltasState state, DeltasStreamRequest request)
