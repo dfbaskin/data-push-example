@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@example/dataui": ["libs/dataui/src/index.ts"],
+      "@example/deltas": ["libs/deltas/src/index.ts"],
       "@example/polling": ["libs/polling/src/index.ts"],
       "@example/subscription": ["libs/subscription/src/index.ts"]
     }

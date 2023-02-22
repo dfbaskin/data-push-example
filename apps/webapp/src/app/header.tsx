@@ -28,6 +28,11 @@ export function Header() {
             </NavLink>
           </li>
           <li>
+            <NavLink to="/deltas" className={isActiveClassName}>
+              Deltas
+            </NavLink>
+          </li>
+          <li>
             <a href="/graphql">GraphQL</a>
           </li>
         </ul>
