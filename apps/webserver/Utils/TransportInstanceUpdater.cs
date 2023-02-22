@@ -46,5 +46,10 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
     {
         var updated = result.Updated;
         await ModelContext.Subscriptions.SendTransportUpdate(updated);
+        await DeltasStream.OnDataUpdated(DeltasStreamUpdated.ForPatchedDocument(
+            DeltasStreamType.TransportDetails,
+            updated.TransportId,
+            patches
+        ));
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text.Json;
+using System.Text;
 using System.Threading.Channels;
 
 public class DeltasStream
@@ -118,9 +119,9 @@ public class DeltasStream
 
             if (result.MessageType == WebSocketMessageType.Text && result.EndOfMessage)
             {
+                var requestBytes = new ArraySegment<byte>(buffer, 0, result.Count);
                 try
                 {
-                    var requestBytes = new ArraySegment<byte>(buffer, 0, result.Count);
                     var request = JsonSerializer.Deserialize<DeltasStreamRequest>(
                         requestBytes,
                         JsonUtils.SerializerOptions
@@ -137,6 +138,7 @@ public class DeltasStream
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Error processing incoming websocket message.");
+                    Logger.LogInformation("Message: {message}", Encoding.UTF8.GetString(requestBytes));
                 }
             }
         }

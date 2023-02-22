@@ -47,6 +47,11 @@ internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, Veh
         var updated = result.Updated;
 
         await ModelContext.Subscriptions.SendVehicleUpdate(updated);
+        await DeltasStream.OnDataUpdated(DeltasStreamUpdated.ForPatchedDocument(
+            DeltasStreamType.VehicleDetails,
+            updated.VehicleId,
+            patches
+        ));
 
         var transport = ModelContext.Current.Transports
             .Where(t => t.Status != TransportStatus.Finished && t.VehicleId == updated.VehicleId)
