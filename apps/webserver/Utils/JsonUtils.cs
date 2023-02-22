@@ -22,15 +22,19 @@ public static class JsonUtils
     // Matches the GraphQL recommendation for Enum values.
     public static string ToUpperSnakeCase(this string value)
     {
-        if(string.IsNullOrEmpty(value))
+        if (string.IsNullOrEmpty(value))
         {
             return value;
         }
 
-        return SnakeCaseRegex.Replace(value, m => $"_{m.Value}").ToUpperInvariant();
+        return string.Join(
+            string.Empty,
+            value.Select((ch, idx) =>
+            {
+                var sep = (idx > 0 && char.IsUpper(ch)) ? "_" : string.Empty;
+                return $"{sep}{char.ToUpper(ch)}";
+            }));
     }
-
-    private static Regex SnakeCaseRegex = new Regex(@"[a-z]");
 
     private class UpperSnakeCaseNamingPolicy : JsonNamingPolicy
     {

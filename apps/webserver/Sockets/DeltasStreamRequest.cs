@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 
 public enum DeltasStreamType
 {
@@ -61,7 +62,7 @@ public record InitialDocument<T>(
 public record PatchedDocument(
     DeltasStreamType StreamType,
     string Id,
-    JsonPatchDocument Patches
+    List<Operation> Patches
 );
 
 public record DeltasStreamUpdated(
@@ -100,7 +101,7 @@ public record DeltasStreamUpdated(
         var patchedDoc = new PatchedDocument(
             StreamType: streamType,
             Id: id,
-            Patches: patches
+            Patches: patches.Operations
         );
         return new DeltasStreamUpdated(
             StreamType: streamType,

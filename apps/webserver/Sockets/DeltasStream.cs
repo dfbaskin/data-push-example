@@ -7,16 +7,6 @@ using System.Threading.Channels;
 
 public class DeltasStream
 {
-    private record DeltasState(
-        long ConnectionId,
-        Channel<DeltasStreamUpdated> Channel,
-        WebSocket Socket
-    )
-    {
-        public IReadOnlyCollection<DeltasStreamRequest> RequestedStreams { get; set; }
-            = new List<DeltasStreamRequest>();
-    }
-
     private static long nextConnectionId = 0;
     private static readonly ConcurrentDictionary<long, DeltasState> queues
         = new ConcurrentDictionary<long, DeltasState>();
@@ -33,14 +23,17 @@ public class DeltasStream
 
     public DeltasStream(
         CurrentData current,
+        IHostApplicationLifetime lifetime,
         ILogger<DeltasStream> logger
     )
     {
         Current = current ?? throw new ArgumentNullException(nameof(current));
+        Lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public CurrentData Current { get; }
+    public IHostApplicationLifetime Lifetime { get; }
     public ILogger<DeltasStream> Logger { get; }
 
     public async Task StreamData(WebSocket socket)
@@ -50,8 +43,7 @@ public class DeltasStream
         var connectionId = Interlocked.Increment(ref nextConnectionId);
         try
         {
-            Logger.LogInformation("Started streaming updates ({connectionId})", connectionId);
-            LogActiveConnections();
+            Logger.LogInformation("Started streaming updates (#{connectionId})", connectionId);
 
             var state = new DeltasState(
                 ConnectionId: connectionId,
@@ -59,19 +51,23 @@ public class DeltasStream
                 Socket: socket
             );
             queues.TryAdd(connectionId, state);
+            LogActiveConnections();
 
-            var tokenSource = new CancellationTokenSource();
-
-            var sendTask = SendDeltaChanges(state, tokenSource.Token);
-            var receiveTask = ProcessStreamRequests(state, tokenSource.Token)
+            var sendTask = SendDeltaChanges(state, Lifetime.ApplicationStopping)
                 .ContinueWith(t =>
                 {
-                    tokenSource.Cancel();
+                    Logger.LogInformation("Send task shut down (#{connectionId})", connectionId);
+                });
+            var receiveTask = ProcessStreamRequests(state, Lifetime.ApplicationStopping)
+                .ContinueWith(t =>
+                {
+                    Logger.LogInformation("Receive task shut down (#{connectionId})", connectionId);
+                    state.Channel.Writer.Complete();
                 });
 
             await Task.WhenAll(sendTask, receiveTask);
 
-            Logger.LogInformation("Finished streaming updates.");
+            Logger.LogInformation("Finished streaming updates (#{connectionId})", connectionId);
         }
         finally
         {
@@ -84,6 +80,11 @@ public class DeltasStream
     {
         while (await state.Channel.Reader.WaitToReadAsync(token))
         {
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+
             await foreach (var updatedStream in state.Channel.Reader.ReadAllAsync(token))
             {
                 if (token.IsCancellationRequested)
@@ -117,6 +118,11 @@ public class DeltasStream
                 token
             );
 
+            if (token.IsCancellationRequested)
+            {
+                break;
+            }
+
             if (result.MessageType == WebSocketMessageType.Text && result.EndOfMessage)
             {
                 var requestBytes = new ArraySegment<byte>(buffer, 0, result.Count);
@@ -128,7 +134,10 @@ public class DeltasStream
                     );
                     if (request != null)
                     {
-                        state.RequestedStreams = GetUpdatedRequestedStreamList(state, request).ToList();
+                        state.UpdatedRequestedStreams(request with
+                        {
+                            Subscribe = false
+                        });
                         if (request.Subscribe)
                         {
                             await QueueInitialDocument(state, request);
@@ -146,14 +155,13 @@ public class DeltasStream
         await state.Socket.CloseAsync(
             WebSocketCloseStatus.NormalClosure,
             null,
-            token
+            CancellationToken.None
         );
-
-        state.Channel.Writer.Complete();
     }
 
     private async Task QueueInitialDocument(DeltasState state, DeltasStreamRequest request)
     {
+
         switch (request.StreamType)
         {
             case DeltasStreamType.Groups:
@@ -166,6 +174,7 @@ public class DeltasStream
                 var transport = Current.Transports.FirstOrDefault(t => t.TransportId == request.Id);
                 if (transport != null)
                 {
+                    state.UpdatedRequestedStreams(request);
                     await state.Channel.Writer.WriteAsync(
                         DeltasStreamUpdated.ForInitialDocument(
                             DeltasStreamType.TransportDetails,
@@ -179,6 +188,7 @@ public class DeltasStream
                 var vehicle = Current.Vehicles.FirstOrDefault(t => t.VehicleId == request.Id);
                 if (vehicle != null)
                 {
+                    state.UpdatedRequestedStreams(request);
                     await state.Channel.Writer.WriteAsync(
                         DeltasStreamUpdated.ForInitialDocument(
                             DeltasStreamType.VehicleDetails,
@@ -192,6 +202,7 @@ public class DeltasStream
                 var driver = Current.Drivers.FirstOrDefault(t => t.DriverId == request.Id);
                 if (driver != null)
                 {
+                    state.UpdatedRequestedStreams(request);
                     await state.Channel.Writer.WriteAsync(
                         DeltasStreamUpdated.ForInitialDocument(
                             DeltasStreamType.DriverDetails,
@@ -204,30 +215,45 @@ public class DeltasStream
         }
     }
 
-    private IEnumerable<DeltasStreamRequest> GetUpdatedRequestedStreamList(DeltasState state, DeltasStreamRequest request)
+    private record DeltasState(
+        long ConnectionId,
+        Channel<DeltasStreamUpdated> Channel,
+        WebSocket Socket
+    )
     {
-        bool found = false;
-        foreach (var requestedStream in state.RequestedStreams)
+        public IReadOnlyCollection<DeltasStreamRequest> RequestedStreams { get; private set; }
+            = new List<DeltasStreamRequest>();
+
+        public void UpdatedRequestedStreams(DeltasStreamRequest request)
         {
-            if (request.ShouldReplace(requestedStream))
+            RequestedStreams = GetUpdatedRequestedStreamList(request).ToList();
+        }
+
+        private IEnumerable<DeltasStreamRequest> GetUpdatedRequestedStreamList(DeltasStreamRequest request)
+        {
+            bool found = false;
+            foreach (var currentStream in RequestedStreams)
             {
-                found = true;
+                if (request.ShouldReplace(currentStream))
+                {
+                    found = true;
+                    if (request.Subscribe)
+                    {
+                        yield return request;
+                    }
+                }
+                else
+                {
+                    yield return currentStream;
+                }
+            }
+
+            if (!found)
+            {
                 if (request.Subscribe)
                 {
                     yield return request;
                 }
-            }
-            else
-            {
-                yield return requestedStream;
-            }
-        }
-
-        if (!found)
-        {
-            if (request.Subscribe)
-            {
-                yield return request;
             }
         }
     }
