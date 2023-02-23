@@ -172,45 +172,19 @@ public class DeltasStream
                 break;
             case DeltasStreamType.TransportDetails:
                 var transport = Current.Transports.FirstOrDefault(t => t.TransportId == request.Id);
-                if (transport != null)
+                var driver = Current.Drivers.FirstOrDefault(d => d.DriverId == transport?.DriverId);
+                var vehicle = Current.Vehicles.FirstOrDefault(v => v.VehicleId == transport?.VehicleId);
+                if (transport != null && driver != null && vehicle != null)
                 {
                     state.UpdatedRequestedStreams(request);
                     await state.Channel.Writer.WriteAsync(
-                        DeltasStreamUpdated.ForInitialDocument(
-                            DeltasStreamType.TransportDetails,
-                            transport.TransportId,
-                            transport
-                        )
+                        TransportDetailsView.InitialData(transport, driver, vehicle)
                     );
                 }
                 break;
             case DeltasStreamType.VehicleDetails:
-                var vehicle = Current.Vehicles.FirstOrDefault(t => t.VehicleId == request.Id);
-                if (vehicle != null)
-                {
-                    state.UpdatedRequestedStreams(request);
-                    await state.Channel.Writer.WriteAsync(
-                        DeltasStreamUpdated.ForInitialDocument(
-                            DeltasStreamType.VehicleDetails,
-                            vehicle.VehicleId,
-                            vehicle
-                        )
-                    );
-                }
                 break;
             case DeltasStreamType.DriverDetails:
-                var driver = Current.Drivers.FirstOrDefault(t => t.DriverId == request.Id);
-                if (driver != null)
-                {
-                    state.UpdatedRequestedStreams(request);
-                    await state.Channel.Writer.WriteAsync(
-                        DeltasStreamUpdated.ForInitialDocument(
-                            DeltasStreamType.DriverDetails,
-                            driver.DriverId,
-                            driver
-                        )
-                    );
-                }
                 break;
         }
     }
