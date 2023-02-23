@@ -49,6 +49,10 @@ internal sealed class DriverInstanceUpdater : ModelInstanceUpdater<Driver, Drive
 
         await ModelContext.Subscriptions.SendDriverUpdate(updated);
 
+        await DeltasStream.OnDataUpdated(
+            DriverDetailsView.WithDriverPatches(updated.DriverId, patches)
+        );
+
         async Task CheckForGroupChange(string? groupName)
         {
             if (!string.IsNullOrEmpty(groupName))
