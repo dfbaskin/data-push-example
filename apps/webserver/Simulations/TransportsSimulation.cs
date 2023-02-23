@@ -341,17 +341,6 @@ public sealed class TransportsSimulation
         (double Lat, double Lng) homeLocation
     )
     {
-        context = await UpdateTransport()
-            .Modify(transport =>
-            {
-                return transport with
-                {
-                    Status = TransportStatus.Finished,
-                    EndTimestampUTC = DateTime.UtcNow,
-                };
-            })
-            .AddHistory($"Finished transport.")
-            .Update(context);
         context = await UpdateVehicle()
             .Modify(vehicle =>
             {
@@ -377,6 +366,17 @@ public sealed class TransportsSimulation
                 };
             })
             .AddHistory($"Finished transport run ({context.TransportId}).")
+            .Update(context);
+        context = await UpdateTransport()
+            .Modify(transport =>
+            {
+                return transport with
+                {
+                    Status = TransportStatus.Finished,
+                    EndTimestampUTC = DateTime.UtcNow,
+                };
+            })
+            .AddHistory($"Finished transport.")
             .Update(context);
 
         await WaitForAFewSeconds(context);

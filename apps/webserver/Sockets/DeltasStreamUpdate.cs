@@ -44,13 +44,13 @@ public record DeltasStreamUpdated(
     public static DeltasStreamUpdated ForPatchedDocument(
         DeltasStreamType streamType,
         string id,
-        JsonPatchDocument patches
+        IEnumerable<Operation> operations
     )
     {
         var patchedDoc = new PatchedDocument(
             StreamType: streamType,
             Id: id,
-            Patches: patches.Operations
+            Patches: operations.ToList()
         );
         return new DeltasStreamUpdated(
             StreamType: streamType,

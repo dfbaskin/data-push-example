@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.JsonPatch;
 
 public record TransportDetailsManifestView(
     DateTime CreatedTimestampUTC,
@@ -77,12 +78,59 @@ public record TransportDetailsView(
 
     public static DeltasStreamUpdated InitialData(Transport transport, Driver driver, Vehicle vehicle)
     {
-        return new DeltasStreamUpdated(
-            StreamType: DeltasStreamType.TransportDetails,
-            Id: transport.TransportId,
-            JsonDocument: JsonSerializer.Serialize<TransportDetailsView>(
-                new TransportDetailsView(transport, driver, vehicle)
-            )
+        return DeltasStreamUpdated.ForInitialDocument(
+            DeltasStreamType.TransportDetails,
+            transport.TransportId,
+            new TransportDetailsView(transport, driver, vehicle)
+        );
+    }
+
+    public static DeltasStreamUpdated WithTransportPatches(string transportId, JsonPatchDocument patches)
+    {
+        return DeltasStreamUpdated.ForPatchedDocument(
+            DeltasStreamType.TransportDetails,
+            transportId,
+            patches
+                .FilterPatches(
+                    nameof(TransportId),
+                    nameof(Status),
+                    nameof(BeginTimestampUTC),
+                    nameof(EndTimestampUTC),
+                    nameof(Manifest),
+                    nameof(History)
+                )
+        );
+    }
+
+    public static DeltasStreamUpdated WithDriverPatches(string transportId, string driverId, JsonPatchDocument patches)
+    {
+        return DeltasStreamUpdated.ForPatchedDocument(
+            DeltasStreamType.TransportDetails,
+            transportId,
+            patches
+                .FilterPatches(
+                    nameof(TransportDetailsDriverView.DriverId),
+                    nameof(TransportDetailsDriverView.Name),
+                    nameof(TransportDetailsDriverView.GroupAssignment),
+                    nameof(TransportDetailsDriverView.Status)
+                )
+                .ApplyPrefix(nameof(Driver))
+        );
+    }
+
+    public static DeltasStreamUpdated WithVehiclePatches(string transportId, string vehicleId, JsonPatchDocument patches)
+    {
+        return DeltasStreamUpdated.ForPatchedDocument(
+            DeltasStreamType.TransportDetails,
+            transportId,
+            patches
+                .FilterPatches(
+                    nameof(TransportDetailsVehicleView.VehicleId),
+                    nameof(TransportDetailsVehicleView.VehicleType),
+                    nameof(TransportDetailsVehicleView.Status),
+                    nameof(TransportDetailsVehicleView.Location)
+                )
+                .ApplyPrefix(nameof(Vehicle))
         );
     }
 }

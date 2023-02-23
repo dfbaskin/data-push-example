@@ -45,11 +45,11 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
     protected override async Task SendNotifications(UpdatedItem<Transport> result, JsonPatchDocument patches)
     {
         var updated = result.Updated;
+
         await ModelContext.Subscriptions.SendTransportUpdate(updated);
-        await DeltasStream.OnDataUpdated(DeltasStreamUpdated.ForPatchedDocument(
-            DeltasStreamType.TransportDetails,
-            updated.TransportId,
-            patches
-        ));
+
+        await DeltasStream.OnDataUpdated(
+            TransportDetailsView.WithTransportPatches(updated.TransportId, patches)
+        );
     }
 }
