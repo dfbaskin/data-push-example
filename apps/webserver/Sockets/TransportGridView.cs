@@ -34,7 +34,7 @@ public record TransportGridView(
     )
     {
         var activeTransports = transports
-            .Where(transport => transport.Status != TransportStatus.Finished)
+            .Where(transport => transport.IsActive())
             .Select(transport =>
             {
                 var driver = drivers.FirstOrDefault(v => v.DriverId == transport.DriverId);

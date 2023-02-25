@@ -37,4 +37,13 @@ public record Transport(
             History: new List<HistoryEntry>()
         );
     }
+
+    public bool IsActive()
+    {
+        return !(
+            Status == TransportStatus.Finished &&
+            EndTimestampUTC != null &&
+            DateTime.UtcNow.Subtract(EndTimestampUTC.Value).TotalSeconds > 20
+        );
+    }
 }

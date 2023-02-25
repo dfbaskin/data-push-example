@@ -13,7 +13,7 @@ public class Query
     public IEnumerable<Transport> GetAllTransports() =>
         Current.Transports;
     public IEnumerable<Transport> GetActiveTransports() =>
-        Current.Transports.Where(t => t.Status != TransportStatus.Finished);
+        Current.Transports.Where(t => t.IsActive());
     public Configuration GetConfiguration() => Current.Configuration;
 
     public Driver? GetDriver(string driverId) =>
