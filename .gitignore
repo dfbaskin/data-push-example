@@ -47,3 +47,5 @@ libs/*/.vs
 libs/*/bin
 libs/*/obj
 libs/*/*.user
+
+.vs/

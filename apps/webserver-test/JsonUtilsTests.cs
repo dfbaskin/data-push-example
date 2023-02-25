@@ -25,6 +25,13 @@ public class JsonUtilsTests
         Assert.Equal(testEnum, result?.Value);
     }
 
+    [Fact]
+    public void ShouldHandleNewtonsoftJsonIgnore()
+    {
+        var text = JsonSerializer.Serialize(new LegacyClass(), JsonUtils.SerializerOptions);
+        Assert.Equal("{\"a\":\"aaa\"}", text);
+    }
+
     public enum TestEnum
     {
         Some,
@@ -35,4 +42,11 @@ public class JsonUtilsTests
     public record TestRecord(
         TestEnum Value
     );
+
+    public class LegacyClass
+    {
+        public string A { get; set; } = "aaa";
+        [Newtonsoft.Json.JsonIgnore]
+        public string B { get; set; } = "bbb";
+    }
 }

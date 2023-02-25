@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
@@ -12,6 +13,10 @@ public static class JsonUtils
         SerializerOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { UseNewtonsoftJsonIgnore }
+            }
         };
         SerializerOptions.Converters.Add(
             new JsonStringEnumConverter(
@@ -101,5 +106,34 @@ public static class JsonUtils
     {
         public override string ConvertName(string name)
             => name.ToUpperSnakeCase();
+    }
+
+    private static void UseNewtonsoftJsonIgnore(JsonTypeInfo ti)
+    {
+        if (ti.Kind != JsonTypeInfoKind.Object)
+        {
+            return;
+        }
+
+        var ignoreType = typeof(Newtonsoft.Json.JsonIgnoreAttribute);
+
+        int idx = 0;
+        while (idx < ti.Properties.Count)
+        {
+            var property = ti.Properties[idx];
+            bool shouldIgnore = property.AttributeProvider != null
+                ? property.AttributeProvider
+                    .GetCustomAttributes(ignoreType, true)
+                    .Any()
+                : false;
+            if (shouldIgnore)
+            {
+                ti.Properties.RemoveAt(idx);
+            }
+            else
+            {
+                ++idx;
+            }
+        }
     }
 }
