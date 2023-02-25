@@ -62,6 +62,9 @@ internal sealed class VehicleInstanceUpdater : ModelInstanceUpdater<Vehicle, Veh
             await DeltasStream.OnDataUpdated(
                 TransportDetailsView.WithVehiclePatches(transport.TransportId, updated.VehicleId, patches)
             );
+            await DeltasStream.OnDataUpdated(
+                TransportGridView.WithVehiclePatches(transport.TransportId, updated.VehicleId, patches)
+            );
         }
     }
 }

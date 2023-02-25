@@ -169,6 +169,16 @@ public class DeltasStream
             case DeltasStreamType.Geolocation:
                 break;
             case DeltasStreamType.Transports:
+                {
+                    state.UpdatedRequestedStreams(request);
+                    await state.Channel.Writer.WriteAsync(
+                        TransportGridView.InitialData(
+                            Current.Transports,
+                            Current.Drivers,
+                            Current.Vehicles
+                        )
+                    );
+                }
                 break;
             case DeltasStreamType.TransportDetails:
                 {

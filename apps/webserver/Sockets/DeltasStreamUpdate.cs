@@ -1,28 +1,27 @@
 using System.Text.Json;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 public record InitialDocument<T>(
     DeltasStreamType StreamType,
-    string Id,
+    string? Id,
     T Initial
 ) where T : class;
 
 public record PatchedDocument(
     DeltasStreamType StreamType,
-    string Id,
+    string? Id,
     List<Operation> Patches
 );
 
 public record DeltasStreamUpdated(
     DeltasStreamType StreamType,
-    string Id,
+    string? Id,
     string JsonDocument
 )
 {
     public static DeltasStreamUpdated ForInitialDocument<T>(
         DeltasStreamType streamType,
-        string id,
+        string? id,
         T doc
     ) where T : class
     {
@@ -43,7 +42,7 @@ public record DeltasStreamUpdated(
 
     public static DeltasStreamUpdated ForPatchedDocument(
         DeltasStreamType streamType,
-        string id,
+        string? id,
         IEnumerable<Operation> operations
     )
     {

@@ -13,6 +13,7 @@ public static class JsonUtils
         SerializerOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {
                 Modifiers = { UseNewtonsoftJsonIgnore }
@@ -60,6 +61,32 @@ public static class JsonUtils
         foreach (var operation in patches.Operations)
         {
             if (propNames.Any(name => operation.path.StartsWith(name)))
+            {
+                yield return operation;
+            }
+        }
+    }
+
+    public static IEnumerable<Operation> ChangePropertyName(
+        this IEnumerable<Operation> operations,
+        string fromPropertyName,
+        string toPropertyName
+    )
+    {
+        var fromPath = ConvertPropertyPath(fromPropertyName);
+        var toPath = ConvertPropertyPath(toPropertyName);
+        foreach (var operation in operations)
+        {
+            if (operation.path == fromPath)
+            {
+                yield return new Operation(
+                    op: operation.op,
+                    path: toPath,
+                    from: operation.from,
+                    value: operation.value
+                );
+            }
+            else
             {
                 yield return operation;
             }

@@ -51,5 +51,8 @@ internal sealed class TransportInstanceUpdater : ModelInstanceUpdater<Transport,
         await DeltasStream.OnDataUpdated(
             TransportDetailsView.WithTransportPatches(updated.TransportId, patches)
         );
+        await DeltasStream.OnDataUpdated(
+            TransportGridView.WithTransportPatches(updated.TransportId, patches)
+        );
     }
 }

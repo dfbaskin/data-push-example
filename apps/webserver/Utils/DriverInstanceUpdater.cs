@@ -78,6 +78,9 @@ internal sealed class DriverInstanceUpdater : ModelInstanceUpdater<Driver, Drive
             await DeltasStream.OnDataUpdated(
                 TransportDetailsView.WithDriverPatches(transport.TransportId, updated.DriverId, patches)
             );
+            await DeltasStream.OnDataUpdated(
+                TransportGridView.WithDriverPatches(transport.TransportId, updated.DriverId, patches)
+            );
         }
     }
 }

@@ -1,78 +1,53 @@
 import { GridData, GridDataType } from '@example/dataui';
-import { useQuery } from 'urql';
-import { usePolling } from './usePolling';
-
-const gridQuery = `
-{
-  activeTransports {
-    transportId
-    status
-    vehicle {
-      vehicleId
-      vehicleType
-      location {
-        latitude
-        longitude
-        address
-      }
-    }
-    driver {
-      driverId
-      status
-    }
-  }
-}
-`;
-
-interface Data {
-  activeTransports: {
-    transportId: string;
-    status: string;
-    vehicle: {
-      vehicleId: string;
-      vehicleType: 'Truck' | 'Van';
-      location: {
-        latitude?: number;
-        longitude?: number;
-        address?: string;
-      };
-    };
-    driver: {
-      driverId: string;
-      status: string;
-    };
-  }[];
-}
+import { applyPatch } from 'fast-json-patch';
+import { useEffect, useState } from 'react';
+import { tap } from 'rxjs';
+import {
+  deltasStreamObservable,
+  isInitialData,
+  isPatchesData,
+  requestDeltasStream,
+} from './deltasStreamObservable';
 
 export function Grid() {
-  const [{ data }, reexecuteQuery] = useQuery<Data>({
-    query: gridQuery,
-    requestPolicy: 'network-only',
-  });
-  usePolling(() => {
-    reexecuteQuery();
-  });
+  const [data, setData] = useState<GridDataType[]>([]);
 
-  const gridData = (
-    data ?? {
-      activeTransports: [],
-    }
-  ).activeTransports
-    .map((t) => {
-      const item: GridDataType = {
-        transportId: t.transportId,
-        transportStatus: t.status,
-        vehicleId: t.vehicle?.vehicleId ?? '?',
-        vehicleType: t.vehicle?.vehicleType,
-        latitude: t.vehicle?.location?.latitude,
-        longitude: t.vehicle?.location?.longitude,
-        address: t.vehicle?.location?.address,
-        driverId: t.driver?.driverId ?? '?',
-        driverStatus: t.driver?.status,
-      };
-      return item;
-    })
-    .sort((a, b) => a.transportId.localeCompare(b.transportId));
+  useEffect(() => {
+    const subscription = deltasStreamObservable()
+      .pipe(
+        tap((data) => {
+          if (data.streamType === 'TRANSPORTS') {
+            if (isInitialData(data)) {
+              setData(data.initial as GridDataType[]);
+            } else if (isPatchesData(data)) {
+              setData((items) => {
+                return items.map((row) => {
+                  if (row.transportId === data.id) {
+                    row = applyPatch(
+                      row,
+                      data.patches,
+                      false,
+                      false
+                    ).newDocument;
+                  }
+                  return row;
+                });
+              });
+            }
+          }
+        })
+      )
+      .subscribe();
+    requestDeltasStream({
+      streamType: 'TRANSPORTS',
+      subscribe: true,
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const gridData = data.sort((a, b) =>
+    a.transportId.localeCompare(b.transportId)
+  );
 
   return <GridData data={gridData} />;
 }

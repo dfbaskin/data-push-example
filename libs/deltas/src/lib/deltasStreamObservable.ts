@@ -17,6 +17,7 @@ export type DeltasUpdateInitial = {
   initial: unknown;
 };
 export type DeltasUpdatePatches = {
+  id?: string;
   patches: Operation[];
 };
 export type DeltasUpdateStream =
@@ -32,7 +33,6 @@ export type DeltasUpdateStream =
     } & DeltasUpdateInitial)
   | ({
       streamType: 'TRANSPORT_DETAILS' | 'VEHICLE_DETAILS' | 'DRIVER_DETAILS';
-      id: string;
     } & DeltasUpdatePatches);
 
 export function isInitialData(
